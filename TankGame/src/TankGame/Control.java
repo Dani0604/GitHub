@@ -24,6 +24,7 @@ class Control {
 	public class PeriodicControl extends Thread {
 		@Override
 		public void run() {
+			System.out.println("Test Gyozo");
 			while (true) {
 				for (int i = 0; i < players.size(); i++) {
 					Player p = players.get(i);
