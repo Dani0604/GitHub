@@ -26,7 +26,7 @@ public class Tank extends Element {
 	@Override
 	public void move(int T) {
 		// TODO Auto-generated method stub
-		if (getPlayer().moveForward) {
+		if (getPlayer().controls.moveForward) {
 			int dx = (int) (velocity * T / 1000 * Math.cos(orientation));
 			int dy = (int) (velocity * T / 1000 * Math.sin(orientation));
 			position.translate(dx, dy);

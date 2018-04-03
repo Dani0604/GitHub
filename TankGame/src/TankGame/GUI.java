@@ -25,10 +25,10 @@ import javax.swing.JPanel;
 public class GUI extends JFrame {
 
 	
-	private Control ctrl;
+	private GameControl ctrl;
 	private DrawPanel drawPanel;
 	private Player player;
-
+	
 	public class PeriodicDrawer extends Thread {
 		@Override
 		public void run() {
@@ -56,7 +56,7 @@ public class GUI extends JFrame {
 		}
 		
 		@Override
-		public void keyTyped(KeyEvent e) {
+		public void keyTyped(KeyEvent e) {   
 		}
 
 		@Override
@@ -65,17 +65,20 @@ public class GUI extends JFrame {
 			int keyCode = e.getKeyCode();
 			switch (keyCode) {
 			case KeyEvent.VK_UP:
-				getPlayer().moveForward = false;
+				player.controls.moveForward = false;
 				break;
 			case KeyEvent.VK_DOWN:
 				// handle down
 				break;
 			case KeyEvent.VK_LEFT:
-				getPlayer().turnLeft = false;
+				player.controls.turnLeft = false;
 				break;
 			case KeyEvent.VK_RIGHT:
 				// handle right
-				getPlayer().turnRight = false;
+				player.controls.turnRight = false;
+				break;
+			case KeyEvent.VK_SPACE:
+				player.controls.shoot = false;
 				break;
 			}
 		}
@@ -86,27 +89,27 @@ public class GUI extends JFrame {
 			int keyCode = e.getKeyCode();
 			switch (keyCode) {
 			case KeyEvent.VK_UP:
-				getPlayer().moveForward = true;
+				player.controls.moveForward = true;
 				break;
 			case KeyEvent.VK_DOWN:
 				// handle down
 				break;
 			case KeyEvent.VK_LEFT:
-				getPlayer().turnLeft = true;
+				player.controls.turnLeft = true;
 				break;
 			case KeyEvent.VK_RIGHT:
 				// handle right
-				getPlayer().turnRight = true;
+				player.controls.turnRight = true;
 				break;
 			case KeyEvent.VK_SPACE:
-				getPlayer().shoot = true;
+				player.controls.shoot = true;
 				break;
 			}
 		}
 
 	}
 
-	GUI(Control c) {
+	GUI(GameControl c) {
 		super("Tanks");
 		ctrl = c;
 		setSize(1024, 1024);

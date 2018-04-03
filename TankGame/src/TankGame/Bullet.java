@@ -59,7 +59,6 @@ public class Bullet extends Element {
 			elements.add(this);
 			t.nextBullet = new Bullet(t);
 		}
-		t.player.shoot = false;
 	}
 
 	protected void finalize() {

@@ -16,7 +16,7 @@ public class Main {
 	 *            the command line arguments
 	 */
 	public static void main(String[] args) {
-		Control c = new Control();
+		GameControl c = new GameControl();
 		GUI g = new GUI(c);
 		g.setPlayer(c.players.get(0));
 		c.setGui(g);
