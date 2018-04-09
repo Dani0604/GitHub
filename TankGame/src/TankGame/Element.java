@@ -1,13 +1,20 @@
 package TankGame;
 
 import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.awt.geom.Area;
 
 abstract public class Element {
-	protected Point position; // kirajzolás poziciója
+	protected Point2D position; // kirajzolás poziciója
 	protected double orientation; // orientáció megadása radiánban
 	protected double velocity; // elem mozgásának sebessége
-
+	protected Area area;
+	protected enum Type {
+		WALL,
+		TANK,
+		BULLET,
+		POWERUP
+	}
 	public boolean deleteElement;
 	
 	protected Map map;
@@ -16,10 +23,14 @@ abstract public class Element {
 
 	abstract public void move(int T);
 
+	abstract protected Type getType();
+	
+	abstract public void delete();
+	
 	public void rotate(double angle) {
 		this.orientation = this.orientation + angle;
 	}
 
-	abstract public void collisionDetection();
+	abstract protected void collisionDetection(Element e);
 
 }

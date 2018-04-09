@@ -3,7 +3,9 @@ package TankGame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 
 public class Bullet extends Element {
@@ -19,7 +21,6 @@ public class Bullet extends Element {
 	public Bullet(Tank t) {
 		this.t = t;
 		velocity = VELOCITY;
-		  
 	}
 
 	@Override
@@ -33,36 +34,56 @@ public class Bullet extends Element {
 	@Override
 	public void move(int T) {
 		// TODO Auto-generated method stub
-		int dx = (int) (velocity * T / 1000 * Math.cos(orientation));
-		int dy = (int) (velocity * T / 1000 * Math.sin(orientation));
-		position.translate(dx, dy);
+		double dx = (velocity * T / 1000 * Math.cos(orientation));
+		double dy = (velocity * T / 1000 * Math.sin(orientation));
+		position.setLocation(position.getX() + dx,position.getY() + dy);
 		actMove = actMove - Math.sqrt(dx*dx+dy*dy);
 		if (actMove < 0){
 			deleteElement = true;
-			t.bulletCounter--;
 		}
+		Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
+		area = new Area(circle);
 	}
 
 	@Override
-	public void collisionDetection() {
+	protected void collisionDetection(Element e) {
 		// TODO Auto-generated method stub
-
+		switch (e.getType()){
+		case TANK:
+			Area buff = new Area(area);
+			buff.intersect(e.area);
+			if (!buff.isEmpty()) deleteElement = true;
+			break;
+		default:
+			break;
+		}
+		
 	}
 
 	public void shoot(ArrayList<Element> elements) {
 		if (t.bulletCounter < MAX_BULLETNUM) {
 			t.bulletCounter++;
-			position = new Point(t.position);
-			position.translate((int) ((Tank.LENGTH / 2 + DIAMETER) * Math.cos(t.orientation)),
-					(int) ((Tank.LENGTH / 2 + DIAMETER) * Math.sin(t.orientation)));
+			position = new Point2D.Double();
+			position.setLocation(t.position.getX() + ((Tank.LENGTH / 2 + DIAMETER*3) * Math.cos(t.orientation)),
+					t.position.getY() + ((Tank.LENGTH / 2 + DIAMETER*5) * Math.sin(t.orientation)));
 			orientation = t.orientation;
+			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
+			area = new Area(circle);
 			elements.add(this);
 			t.nextBullet = new Bullet(t);
 		}
 	}
 
-	protected void finalize() {
-		
+
+	@Override
+	protected Type getType() {
+		return Type.BULLET;
+	}
+
+	@Override
+	public void delete() {
+		// TODO Auto-generated method stub
+		t.bulletCounter--;
 	}
 
 }

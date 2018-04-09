@@ -13,7 +13,7 @@ class GameControl {
 	private GUI gui;
 	public ArrayList<Element> elements;
 	public ArrayList<Player> players;
-	private static final int T = 50;
+	private static final int T = 20;
 	
 
 	public class PeriodicControl extends Thread {
@@ -32,10 +32,22 @@ class GameControl {
 
 				}
 				for (int i = 0; i < elements.size(); i++) {
-					Element e = elements.get(i);
-					e.move(T);
-					if(e.deleteElement)
+					Element e1 = elements.get(i);
+					e1.move(T);
+					for (int j = i+1; j < elements.size(); j++) {
+						Element e2 = elements.get(j);
+						e1.collisionDetection(e2);
+						e2.collisionDetection(e1);	
+						if(e2.deleteElement){
+							e2.delete();
+							elements.remove(j);
+						}
+					}
+					
+					if(e1.deleteElement){
+						e1.delete();
 						elements.remove(i);
+					}
 				}
 
 				try {
@@ -52,7 +64,10 @@ class GameControl {
 		elements = new ArrayList<Element>();
 		players = new ArrayList<Player>();
 		newElement(300, 300, 0);
+		newElement(300, 600, 0);
 		Player p = new Player((Tank) elements.get(0));
+		players.add(p);
+		p = new Player((Tank) elements.get(1));
 		players.add(p);
 		Thread t = new PeriodicControl();
 		t.start();

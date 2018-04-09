@@ -17,9 +17,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		GameControl c = new GameControl();
-		GUI g = new GUI(c);
-		g.setPlayer(c.players.get(0));
-		c.setGui(g);
-
+		GUI g1 = new GUI(c);
+		GUI g2 = new GUI(c);
+		g1.setPlayer(c.players.get(0));
+		c.setGui(g1);
+		
 	}
 }
