@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.geom.Area;
+import java.awt.geom.Point2D;
+import java.util.concurrent.Semaphore;
 
 import TankGame.Element.Type;
 
@@ -20,13 +23,18 @@ public class Tank extends Element {
 	Bullet nextBullet;
 	public int bulletCounter = 0;
 
+
+
+
 	public Tank(int x, int y, double o) {
 		// TODO
-		position = new Point(x, y);
+		position = new Point2D.Double(x, y);
 		orientation = o;
 		velocity = VELOCITY;
 		nextBullet = new Bullet(this);
-		
+		s = new Semaphore(1);
+
+
 		int xPoly[] = { 1, 1, 1, 1 };
 		int yPoly[] = { 1, 1, 1, 1 };
 		int signs[][] = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
@@ -41,11 +49,11 @@ public class Tank extends Element {
 	}
 
 	@Override
-	public void move(int T) {
+	public void move(double T) {
 		// TODO Auto-generated method stub
 		if (getPlayer().controls.moveForward) {
-			double dx = (velocity * T / 1000 * Math.cos(orientation));
-			double dy = (velocity * T / 1000 * Math.sin(orientation));
+			double dx = (velocity * T / 1000.0 * Math.cos(orientation));
+			double dy = (velocity * T / 1000.0 * Math.sin(orientation));
 			position.setLocation(position.getX() + dx,position.getY() + dy);
 		}
 		int xPoly[] = { 1, 1, 1, 1 };
@@ -57,24 +65,42 @@ public class Tank extends Element {
 			yPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.sin(orientation)
 					+ signs[i][1] * WIDTH / 2 * Math.cos(orientation)) + position.getY());
 		}
-		poly = new Polygon(xPoly, yPoly, xPoly.length);
+		try {
+			s.acquire();
+			poly = new Polygon(xPoly, yPoly, xPoly.length);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally{
+			s.release();
+		}			
 		area = new Area(poly);
 	}
 
 	@Override
 	protected void collisionDetection(Element e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void draw(Graphics g) {
 		// TODO Auto-generated method stub
-	
+
 		if (g != null) {
-			g.drawPolygon(poly);
+			try {
+				s.acquire();
+				g.drawPolygon(poly);
+				//g.drawRect((int)poly.getBounds().getX(), (int)poly.getBounds().getY(), (int)poly.getBounds().getWidth(), (int)poly.getBounds().getHeight());
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			finally{
+				s.release();
+			}			
 		}
-		
 	}
 
 	public Player getPlayer() {
@@ -93,7 +119,41 @@ public class Tank extends Element {
 	@Override
 	public void delete() {
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	@Override
+	public void wallCollision(Map map){
+		Rectangle r = poly.getBounds();
+		for (int i = 0; i < Map.lines.size(); i++) { 
+			Area a = new Area(r);
+			a.intersect(new Area(Map.lines.get(i)));
+			if(!a.isEmpty()){
+				double dx = 0;
+				double dy = 0;
+				//Függõleges fal
+				Rectangle l = Map.lines.get(i);
+				if (l.getHeight() > l.getWidth()){
+					
+					if (position.getX() < l.getX()){
+						dx = -Math.abs(Math.abs((position.getX()-l.getX()))-(double)r.getWidth()/2.0);
+					}
+					else
+						dx = Math.abs(Math.abs((position.getX()-(l.getX()+l.getWidth())))-(double)r.getWidth()/2.0);
+				}
+				//Vizszintes fal 
+				else{
+					
+					if (position.getY() < l.getY()){
+						dy = -Math.abs(Math.abs((position.getY()-l.getY()))-(double)r.getHeight()/2.0);
+					}
+					else
+						dy = Math.abs(Math.abs((position.getY()-(l.getY()+l.getHeight())))-(double)r.getHeight()/2.0);
+					
+		
+				}	
+				position.setLocation(position.getX() + dx,position.getY() + dy);
+			}
+		}
+	}
 }

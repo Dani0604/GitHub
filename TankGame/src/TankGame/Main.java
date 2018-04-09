@@ -16,11 +16,18 @@ public class Main {
 	 *            the command line arguments
 	 */
 	public static void main(String[] args) {
-		GameControl c = new GameControl();
-		GUI g1 = new GUI(c);
-		GUI g2 = new GUI(c);
+		
+		MainControl mc1 = new MainControl();
+		MainControl mc2 = new MainControl();
+		mc1.map = new Map();
+		mc2.map = new Map();
+		GameControl c = new GameControl(mc1);
+		GUI g1 = new GUI(mc1);
+		GUI g2 = new GUI(mc2);
 		g1.setPlayer(c.players.get(0));
-		c.setGui(g1);
+		g2.setPlayer(c.players.get(1));
+		mc1.setGui(g1);
+		mc2.setGui(g2);
 		
 	}
 }

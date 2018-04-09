@@ -25,7 +25,7 @@ import javax.swing.JPanel;
 public class GUI extends JFrame {
 
 	
-	private GameControl ctrl;
+	private MainControl mctrl;
 	private DrawPanel drawPanel;
 	private Player player;
 	
@@ -48,9 +48,9 @@ public class GUI extends JFrame {
 		private static final long serialVersionUID = 1L;
 		@Override
 		protected void paintComponent(Graphics g) {
-			super.paintComponent(g);
-
-			for (Element e : ctrl.elements) {
+ 			super.paintComponent(g);
+			mctrl.map.draw(g);
+			for (Element e : mctrl.elements) {
 				e.draw(g);
 			}
 		}
@@ -109,9 +109,9 @@ public class GUI extends JFrame {
 
 	}
 
-	GUI(GameControl c) {
+	GUI(MainControl mc) {
 		super("Tanks");
-		ctrl = c;
+		mctrl = mc;
 		setSize(1024, 1024);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
@@ -131,8 +131,8 @@ public class GUI extends JFrame {
 		setJMenuBar(menuBar);
 
 		drawPanel = new DrawPanel();
-		drawPanel.setBounds(0, 0, 1000, 1000);
-		drawPanel.setBorder(BorderFactory.createTitledBorder("Draw"));
+		drawPanel.setBounds(0, 0, 800, 800);
+		//drawPanel.setBorder(BorderFactory.createTitledBorder("Draw"));
 		addKeyListener(drawPanel);
 
 		add(drawPanel);
