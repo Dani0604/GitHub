@@ -30,14 +30,12 @@ public class Map {
 		mazegenerator = new MazeGenerator(ColumnNum,RowNum);
 	}
 
-
 	void draw(Graphics g){
 		for (int i = 0; i < lines.size(); i++) { 
 			Rectangle r = lines.get(i);
 			g.fillRect((int)r.getX(),(int)r.getY(),(int)r.getWidth(),(int)r.getHeight());
 		}
 	}
-
 
 	public static class MazeGenerator {
 		private final int x;
@@ -58,29 +56,33 @@ public class Map {
 				// save the north edge
 				for (int j = 0; j < x; j++) {
 					if ((maze[j][i] & 1) == 0){
+						if (i != 0 && j != 0 && Math.random() > 0.9)
+							continue;
 					Rectangle l1 = new Rectangle(j*MapWidth/ColumnNum,i*MapHeight/RowNum,MapWidth/ColumnNum,5);
 					lines.add(l1);
 					areas.add(new Area(l1) );
 					}
-					System.out.print((maze[j][i] & 1) == 0 ? "+---" : "+   ");
+					//System.out.print((maze[j][i] & 1) == 0 ? "+---" : "+   ");
 				}
-				System.out.println("+");
+				//System.out.println("+");
 				// save the west edge
 				for (int j = 0; j < x; j++) {
 					if ((maze[j][i] & 8) == 0){
+						if (i != 0 && j != 0 && Math.random() > 0.9)
+							continue;
 						Rectangle l1 = new Rectangle(j*MapWidth/ColumnNum,i*MapHeight/RowNum,5,MapHeight/RowNum);
 						lines.add(l1);
 						areas.add(new Area(l1) );
 					}
-						System.out.print((maze[j][i] & 8) == 0 ? "|   " : "    ");
+						//System.out.print((maze[j][i] & 8) == 0 ? "|   " : "    ");
 				}
-				System.out.println("|");
+				//System.out.println("|");
 			}
 			// save the bottom line
 			for (int j = 0; j < x; j++) {
-				System.out.print("+---");
+				//System.out.print("+---");
 			}
-			System.out.println("+");
+			//System.out.println("+");
 		}
 
 		private void generateMaze(int cx, int cy) {
@@ -123,9 +125,6 @@ public class Map {
 				this.dy = dy;
 			}
 		};
-
-
-
 	}
 
 }

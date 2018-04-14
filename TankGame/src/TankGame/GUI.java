@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.Serializable;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -32,10 +33,17 @@ public class GUI extends JFrame {
 	public class PeriodicDrawer extends Thread {
 		@Override
 		public void run() {
+			double old_time = 0;
 			while (true) {
 				drawPanel.repaint();
 				try {
 					Thread.sleep(5);
+					double new_time;
+					new_time = System.currentTimeMillis();
+				    double delta = new_time - old_time;
+				    double fps = 1 / (delta / 1000);
+				    old_time = new_time;
+				   // System.out.println(fps);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -46,6 +54,11 @@ public class GUI extends JFrame {
 
 	public class DrawPanel extends JPanel implements KeyListener {
 		private static final long serialVersionUID = 1L;
+		
+		DrawPanel(){
+			setDoubleBuffered(true);
+		}
+		
 		@Override
 		protected void paintComponent(Graphics g) {
  			super.paintComponent(g);

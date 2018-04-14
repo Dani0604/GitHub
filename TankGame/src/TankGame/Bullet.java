@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
 
 public class Bullet extends Element {
 
-	private static final double VELOCITY = 310;
+	private static final double VELOCITY = 210;
 	private static final double MAX_MOVE = 2000; 
 	private double actMove = MAX_MOVE;
 	private static final int DIAMETER = 5;

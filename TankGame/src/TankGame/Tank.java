@@ -15,7 +15,7 @@ public class Tank extends Element {
 
 	static final int LENGTH = 30;
 	private static final int WIDTH = 20;
-	private static final int VELOCITY = 300;
+	private static final int VELOCITY = 200;
 	private int health;
 	private Color color;
 	private Polygon poly;
@@ -92,7 +92,7 @@ public class Tank extends Element {
 			try {
 				s.acquire();
 				g.drawPolygon(poly);
-				//g.drawRect((int)poly.getBounds().getX(), (int)poly.getBounds().getY(), (int)poly.getBounds().getWidth(), (int)poly.getBounds().getHeight());
+				g.drawRect((int)poly.getBounds().getX(), (int)poly.getBounds().getY(), (int)poly.getBounds().getWidth(), (int)poly.getBounds().getHeight());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -126,34 +126,50 @@ public class Tank extends Element {
 	public void wallCollision(Map map){
 		Rectangle r = poly.getBounds();
 		for (int i = 0; i < Map.lines.size(); i++) { 
-			Area a = new Area(r);
+			Area a = new Area(poly);
 			a.intersect(new Area(Map.lines.get(i)));
 			if(!a.isEmpty()){
 				double dx = 0;
 				double dy = 0;
-				//Függõleges fal
 				Rectangle l = Map.lines.get(i);
-				if (l.getHeight() > l.getWidth()){
-					
-					if (position.getX() < l.getX()){
+				double w = 0.5 * (r.getWidth() + l.getWidth());
+				double h = 0.5 * (r.getHeight() + l.getHeight());
+				double ddx = r.getCenterX() - l.getCenterX();
+				double ddy = r.getCenterY() - l.getCenterY();
+
+
+				/* collision! */
+				double wy = w * ddy;
+				double hx = h * ddx;
+
+				if (wy > hx){
+					if (wy > -hx){
+						/* collision at the top */
+						dy = Math.abs(Math.abs((position.getY()-(l.getY()+l.getHeight())))-(double)r.getHeight()/2.0);
+					}
+
+					else{
+						/* on the left */
 						dx = -Math.abs(Math.abs((position.getX()-l.getX()))-(double)r.getWidth()/2.0);
 					}
-					else
-						dx = Math.abs(Math.abs((position.getX()-(l.getX()+l.getWidth())))-(double)r.getWidth()/2.0);
 				}
-				//Vizszintes fal 
+
 				else{
-					
-					if (position.getY() < l.getY()){
-						dy = -Math.abs(Math.abs((position.getY()-l.getY()))-(double)r.getHeight()/2.0);
+					if (wy > -hx){
+						/* on the right */
+						dx = Math.abs(Math.abs((position.getX()-(l.getX()+l.getWidth())))-(double)r.getWidth()/2.0);
 					}
-					else
-						dy = Math.abs(Math.abs((position.getY()-(l.getY()+l.getHeight())))-(double)r.getHeight()/2.0);
-					
-		
-				}	
+
+					else{
+						/* at the bottom */
+						dy = -Math.abs(Math.abs((position.getY()-l.getY()))-(double)r.getHeight()/2.0);
+						
+					}
+				}
 				position.setLocation(position.getX() + dx,position.getY() + dy);
 			}
+
+
 		}
 	}
 }
