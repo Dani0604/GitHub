@@ -128,19 +128,50 @@ public class GUI extends JFrame {
 		setSize(1024, 1024);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
-
+			
+		//MENÜ
 		JMenuBar menuBar = new JMenuBar();
-		JMenu menu = new JMenu("Start");
-
-		JMenuItem menuItem = new JMenuItem("Exit");
-		menuItem.addActionListener(new ActionListener() {
+		
+		JMenu file = new JMenu("File");
+		JMenuItem start = new JMenuItem("Start");
+		start.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//System.exit(0);
+				
+				//start gomb funkciója...
+			}
+		});
+		file.add(start);
+		JMenuItem exit = new JMenuItem("Exit");
+		exit.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
-		menuBar.add(menuItem);
+		file.add(exit);
 
+		JMenu network = new JMenu("Network");
+		JMenuItem server = new JMenuItem("Server");
+		exit.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//szerver indítása
+			}
+		});
+		JMenuItem client = new JMenuItem("Client");
+		start.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {				
+				//kliens indítása
+			}
+		});
+		network.add(client);
+		network.add(server);
+		
+		menuBar.add(file);
+		menuBar.add(network);
 		setJMenuBar(menuBar);
 
 		drawPanel = new DrawPanel();

@@ -27,4 +27,12 @@ public class MainControl {
 	public void setGui(GUI gui) {
 		this.gui = gui;
 	}
+	
+	void elementReceived(Element e) {
+		if (gui == null)
+			return;
+		//add elements to contol (which?)
+		elements.add(e);
+	}
+
 }
