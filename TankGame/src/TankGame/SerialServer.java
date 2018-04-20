@@ -46,10 +46,10 @@ public class SerialServer extends Network {
 
 			try {
 				while (true) {
-					Element received = (Element) in.readObject();
-					gctrl.elementReceived(received);
+					Player received = (Player) in.readObject();
+					gctrl.playerReceived(received);
 				}
-			} catch (Exception ex) {
+			} catch (Exception ex) { //itt lép ki hibával
 				System.out.println(ex.getMessage());
 				System.err.println("Client disconnected!");
 			} finally {
@@ -72,12 +72,12 @@ public class SerialServer extends Network {
 	}
 
 	@Override
-	void send(Point p) {
+	void send(Player _player) {
 		if (out == null)
 			return;
-		System.out.println("Sending point: " + p + " to Client");
+		//System.out.println("Sending player to Client");
 		try {
-			out.writeObject(p);
+			out.writeObject(_player);
 			out.flush();
 		} catch (IOException ex) {
 			System.err.println("Send error.");

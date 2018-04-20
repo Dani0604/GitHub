@@ -7,11 +7,12 @@ import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 
 import TankGame.Element.Type;
 
-public class Tank extends Element {
+public class Tank extends Element implements Serializable {
 
 	static final int LENGTH = 30;
 	private static final int WIDTH = 20;
@@ -45,7 +46,7 @@ public class Tank extends Element {
 					+ signs[i][1] * WIDTH / 2 * Math.cos(orientation)) + position.getY());
 		}
 		poly = new Polygon(xPoly, yPoly, xPoly.length);
-		area = new Area(poly);
+		//area = new Area(poly);
 	}
 
 	@Override
@@ -75,7 +76,7 @@ public class Tank extends Element {
 		finally{
 			s.release();
 		}			
-		area = new Area(poly);
+		//area = new Area(poly);
 	}
 
 	@Override

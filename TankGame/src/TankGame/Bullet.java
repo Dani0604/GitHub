@@ -8,11 +8,12 @@ import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Semaphore;
 
-public class Bullet extends Element {
+public class Bullet extends Element implements Serializable {
 
 	private static final double VELOCITY = 210;
 	private static final double MAX_MOVE = 2000; 
@@ -60,7 +61,7 @@ public class Bullet extends Element {
 		try {
 			s.acquire();
 			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-			area = new Area(circle);
+			//area = new Area(circle);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -77,9 +78,9 @@ public class Bullet extends Element {
 		// TODO Auto-generated method stub
 		switch (e.getType()){
 		case TANK:
-			Area a = new Area(area);
-			a.intersect(e.area);
-			if (!a.isEmpty()) deleteElement = true;
+			//Area a = new Area(area);
+			//a.intersect(e.area);
+			//if (!a.isEmpty()) deleteElement = true;
 			break;
 		default:
 			break;
@@ -95,7 +96,7 @@ public class Bullet extends Element {
 					t.position.getY() + ((Tank.LENGTH / 2 + DIAMETER*5) * Math.sin(t.orientation)));
 			orientation = t.orientation;
 			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-			area = new Area(circle);
+			//area = new Area(circle);
 			elements.add(this);
 			t.nextBullet = new Bullet(t);
 		}
@@ -118,19 +119,19 @@ public class Bullet extends Element {
 		for (int i = 0; i < map.lines.size(); i++) { 
 			if (lastColl != i){
 				Area a = new Area(map.areas.get(i));
-				a.intersect(area);
-				if(!a.isEmpty()){
+				//a.intersect(area);
+				//if(!a.isEmpty()){
 					//Függõleges fal
-					Rectangle l = map.lines.get(i);
-					if (l.getHeight() > l.getWidth()){
-						orientation = Math.PI-orientation;
-					}
+				//	Rectangle l = map.lines.get(i);
+				//	if (l.getHeight() > l.getWidth()){
+				//		orientation = Math.PI-orientation;
+				//	}
 					//Vizszintes fal 
-					else{
-						orientation = 2*Math.PI-orientation;
-					}
-					lastColl = i;
-				}
+				//	else{
+				//		orientation = 2*Math.PI-orientation;
+				//	}
+				//	lastColl = i;
+				//}
 			}
 		}
 	}

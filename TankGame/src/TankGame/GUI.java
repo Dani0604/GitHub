@@ -9,9 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.Serializable;
 
-import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -25,7 +23,6 @@ import javax.swing.JPanel;
 
 public class GUI extends JFrame {
 
-	
 	private MainControl mctrl;
 	private DrawPanel drawPanel;
 	private Player player;
@@ -37,13 +34,29 @@ public class GUI extends JFrame {
 			while (true) {
 				drawPanel.repaint();
 				try {
-					Thread.sleep(5);
+					Thread.sleep(25);
 					double new_time;
 					new_time = System.currentTimeMillis();
 				    double delta = new_time - old_time;
 				    double fps = 1 / (delta / 1000);
 				    old_time = new_time;
 				   // System.out.println(fps);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	public class PeriodicPlayerSender extends Thread {
+		@Override
+		public void run() {
+			while (true) {
+				try {
+					Thread.sleep(2500);
+					System.out.println("Sending player: " + player.tank.position + "to server.");
+					mctrl.send(player);
 				} catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -122,9 +135,10 @@ public class GUI extends JFrame {
 
 	}
 
-	GUI(MainControl mc) {
+	GUI(MainControl mc, boolean _is_server) {
 		super("Tanks");
 		mctrl = mc;
+		mctrl.is_server = _is_server;
 		setSize(1024, 1024);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
@@ -154,17 +168,19 @@ public class GUI extends JFrame {
 
 		JMenu network = new JMenu("Network");
 		JMenuItem server = new JMenuItem("Server");
-		exit.addActionListener(new ActionListener() {
+		server.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//szerver indítása
+				mctrl.startServer();
 			}
 		});
 		JMenuItem client = new JMenuItem("Client");
-		start.addActionListener(new ActionListener() {
+		client.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {				
-				//kliens indítása
+				mctrl.startClient();
+				Thread networkthread = new PeriodicPlayerSender();
+				networkthread.start();
 			}
 		});
 		network.add(client);

@@ -4,11 +4,12 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 
-public class Map {
+public class Map{
 	public static ArrayList<Rectangle> lines;
 	public static ArrayList<Area> areas;
 	public final static int MapHeight = 800;

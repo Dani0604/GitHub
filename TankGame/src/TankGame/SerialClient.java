@@ -15,13 +15,15 @@ public class SerialClient extends Network {
 	private class ReceiverThread implements Runnable {
 
 		public void run() {
-			System.out.println("Waiting for points...");
+			System.out.println("Waiting for players...");
 			try {
+				Thread.sleep(50);
 				while (true) {
-					Element received = (Element) in.readObject();
-					mctrl.elementReceived(received);
+					Player received = (Player) in.readObject();
+					System.out.println(received.tank.position);
+					mctrl.playerReceived(received);
 				}
-			} catch (Exception ex) {
+			} catch (Exception ex) { //itt lép ki hibával
 				System.out.println(ex.getMessage());
 				System.err.println("Server disconnected!");
 			} finally {
@@ -55,12 +57,12 @@ public class SerialClient extends Network {
 	}
 	
 	@Override
-	void send(Point p) {
+	void send(Player _player) {
 		if (out == null)
 			return;
-		System.out.println("Sending point: " + p + " to Server");
+		//System.out.println("Sending player:" + _player.tank.position + "to Server");
 		try {
-			out.writeObject(p);
+			out.writeObject(_player);
 			out.flush();
 		} catch (IOException ex) {
 			System.err.println("Send error.");

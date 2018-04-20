@@ -6,11 +6,11 @@ import java.io.Serializable;
 import java.util.concurrent.Semaphore;
 import java.awt.geom.Area;
 
-abstract public class Element implements Serializable {
+abstract public class Element{
 	protected Point2D position; // kirajzolás poziciója
 	protected double orientation; // orientáció megadása radiánban
 	protected double velocity; // elem mozgásának sebessége
-	protected Area area;
+	//protected Area area;
 	protected Semaphore s;
 	protected enum Type {
 		WALL,

@@ -6,6 +6,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class MainControl {
 	public CopyOnWriteArrayList<Element> elements;
 	private GUI gui;
+	private Network net;
+	public boolean is_server;
 	public Map map;
 	
 	MainControl(){
@@ -28,11 +30,32 @@ public class MainControl {
 		this.gui = gui;
 	}
 	
-	void elementReceived(Element e) {
+	public void startServer(){
+		if(net != null){
+			net.disconnect();
+		}
+		net = new SerialServer(this);
+		net.connect("localhost");
+	}
+	
+	public void startClient(){
+		if(net != null){
+			net.disconnect();
+		}
+		net = new SerialClient(this);
+		net.connect("localhost");
+	}
+	
+	public void send(Player _player){
+		if(!is_server && _player != null && net != null){
+			net.send(_player);
+		}
+	}
+	
+	void playerReceived(Player _player) {
 		if (gui == null)
 			return;
-		//add elements to contol (which?)
-		elements.add(e);
+		//elements.add(e);
 	}
 
 }
