@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 
 public class SerialServer extends Network {
 
-	MainControl gctrl;
+	
 	private ServerSocket serverSocket = null;
 	private Socket clientSocket = null;
 	private ObjectOutputStream out = null;
@@ -47,13 +47,15 @@ public class SerialServer extends Network {
 			try {
 				while (true) {
 					Player received = (Player) in.readObject();
-					gctrl.playerReceived(received);
+					mctrl.playerReceived(received);
 				}
 			} catch (Exception ex) { //itt lép ki hibával
 				System.out.println(ex.getMessage());
 				System.err.println("Client disconnected!");
+				if (ex.getMessage() != "null")
+					disconnect();
 			} finally {
-				disconnect();
+				
 			}
 		}
 	}

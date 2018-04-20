@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 
 public class SerialClient extends Network {
 
-	MainControl mctrl;
+	
 	private Socket socket = null;
 	private ObjectOutputStream out = null;
 	private ObjectInputStream in = null;
