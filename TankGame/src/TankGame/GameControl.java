@@ -66,8 +66,6 @@ class GameControl {
 		players = new ArrayList<Player>();
 		Player p = new Player((Tank) mctrl.elements.get(0));
 		players.add(p);
-		p = new Player((Tank) mctrl.elements.get(1));
-		players.add(p);
 		Thread t = new PeriodicControl();
 		t.start();
 	}

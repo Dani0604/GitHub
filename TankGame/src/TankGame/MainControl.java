@@ -1,5 +1,7 @@
 package TankGame;
 
+import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -13,7 +15,6 @@ public class MainControl {
 	MainControl(){
 		elements = new CopyOnWriteArrayList<Element>();
 		newElement(300, 300, 0);
-		newElement(300, 600, 0);
 	}
 	
 	Element newElement(int x, int y, double o) {
@@ -47,7 +48,7 @@ public class MainControl {
 	}
 	
 	public void send(Player _player){
-		if(!is_server && _player != null && net != null){
+		if(_player != null && net != null){
 			net.send(_player);
 		}
 	}
@@ -55,7 +56,10 @@ public class MainControl {
 	void playerReceived(Player _player) {
 		if (gui == null)
 			return;
-		//elements.add(e);
+		//gui.setPlayer(_player);
 	}
 
+	void mapReceived(ArrayList<Rectangle> _r) {
+		this.map.lines = _r;
+	}
 }

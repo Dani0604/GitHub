@@ -43,13 +43,16 @@ public class SerialServer extends Network {
 				disconnect();
 				return;
 			}
+			
+			sendMap();
 
 			try {
 				while (true) {
+					System.out.println("Server received an object.");
 					Player received = (Player) in.readObject();
 					mctrl.playerReceived(received);
 				}
-			} catch (Exception ex) { //itt lép ki hibával
+			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 				System.err.println("Client disconnected!");					
 			} finally {
@@ -63,7 +66,7 @@ public class SerialServer extends Network {
 		disconnect();
 		try {
 			serverSocket = new ServerSocket(10007);
-
+			
 			Thread rec = new Thread(new ReceiverThread());
 			rec.start();
 		} catch (IOException e) {
@@ -98,6 +101,22 @@ public class SerialServer extends Network {
 		} catch (IOException ex) {
 			Logger.getLogger(SerialServer.class.getName()).log(Level.SEVERE,
 					null, ex);
+		}
+	}
+	
+	/**
+	 *A kliens csatlakozása után elküldi neki a térképet.
+	 * @author Gyozo
+	 */
+	void sendMap(){
+		if (out == null)
+			return;
+		System.out.println("Sending map to Client");
+		try {
+			out.writeObject(mctrl.map.lines);
+			out.flush();
+		} catch (IOException ex) {
+			System.err.println("Send error.");
 		}
 	}
 }

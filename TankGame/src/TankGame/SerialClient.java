@@ -1,8 +1,11 @@
 package TankGame;
 
-import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.geom.Area;
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 public class SerialClient extends Network {
@@ -15,15 +18,25 @@ public class SerialClient extends Network {
 	private class ReceiverThread implements Runnable {
 
 		public void run() {
-			System.out.println("Waiting for players...");
 			try {
+				System.out.println("Terkep fogadasa.");
+				ArrayList<Rectangle> received = (ArrayList<Rectangle>) in.readObject();
+				mctrl.mapReceived(received);
+				System.out.println("Map received.");
+			} catch (Exception ex) {
+				System.out.println(ex.getMessage());
+				System.err.println("Server disconnected!");
+			}
+			
+			try {
+				System.out.println("Tankok fogadasa.");
 				Thread.sleep(50);
 				while (true) {
 					Player received = (Player) in.readObject();
 					System.out.println(received.tank.position);
 					mctrl.playerReceived(received);
 				}
-			} catch (Exception ex) { //itt lép ki hibával
+			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 				System.err.println("Server disconnected!");
 			} finally {
@@ -60,10 +73,10 @@ public class SerialClient extends Network {
 	void send(Player _player) {
 		if (out == null)
 			return;
-		//System.out.println("Sending player:" + _player.tank.position + "to Server");
 		try {
 			out.writeObject(_player);
 			out.flush();
+			System.out.println("Sending player to server.");
 		} catch (IOException ex) {
 			System.err.println("Send error.");
 		}

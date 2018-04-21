@@ -49,15 +49,15 @@ public class GUI extends JFrame {
 		}
 	}
 	
-	public class PeriodicPlayerSender extends Thread {
+	public class PeriodicPlayerUpdater extends Thread {
 		@Override
 		public void run() {
 			while (true) {
 				try {
 					Thread.sleep(2500);
-					System.out.println("Sending player: " + player.tank.position + "to server.");
 					mctrl.send(player);
-				} catch (InterruptedException e) {
+				}
+				catch (InterruptedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
@@ -179,7 +179,7 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {				
 				mctrl.startClient();
-				Thread networkthread = new PeriodicPlayerSender();
+				Thread networkthread = new PeriodicPlayerUpdater();
 				networkthread.start();
 			}
 		});
