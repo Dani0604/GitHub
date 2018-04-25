@@ -63,7 +63,7 @@ public class Bullet extends Element implements Serializable {
 		try {
 			s.acquire();
 			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-			//area = new Area(circle);
+			area = new Area(circle);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -80,9 +80,9 @@ public class Bullet extends Element implements Serializable {
 		// TODO Auto-generated method stub
 		switch (e.getType()){
 		case TANK:
-			//Area a = new Area(area);
-			//a.intersect(e.area);
-			//if (!a.isEmpty()) deleteElement = true;
+			Area a = new Area(area);
+			a.intersect(e.area);
+			if (!a.isEmpty()) deleteElement = true;
 			break;
 		default:
 			break;
@@ -100,7 +100,7 @@ public class Bullet extends Element implements Serializable {
 			prevPos.setLocation(position);
 			orientation = t.orientation;
 			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-			//area = new Area(circle);
+			area = new Area(circle);
 			elements.add(this);
 			t.nextBullet = new Bullet(t);
 		}
@@ -121,10 +121,7 @@ public class Bullet extends Element implements Serializable {
 	@Override
 	public void wallCollision(Map map){
 		Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-		//Rectangle r = circle.getBounds();
-
 		Ellipse2D.Double prevCircle = new Ellipse2D.Double(prevPos.getX(), prevPos.getY(), DIAMETER, DIAMETER);
-		Rectangle prevr = prevCircle.getBounds();
 		for (int i = 0; i < Map.lines.size(); i++) { 
 			Area a = new Area(circle);
 			Rectangle l = Map.lines.get(i);
@@ -140,7 +137,7 @@ public class Bullet extends Element implements Serializable {
 					dx = -Math.abs(Math.abs((position.getX()-l.getX()))-(double)DIAMETER);
 				}
 				//jobbról ütközés
-				if (prevCircle.getMinX() > l.getMaxX() && circle.getMinX() <= l.getMaxX()){
+				if (prevCircle.getMinX() > l.getMaxX() && circle.getMinX() <= l.getMaxX()){ 
 					orientation = Math.PI-orientation;
 					dx = Math.abs(Math.abs((position.getX()-(l.getMaxX()))));
 				}
@@ -154,43 +151,6 @@ public class Bullet extends Element implements Serializable {
 					orientation = 2*Math.PI-orientation;
 					dy = Math.abs(Math.abs((position.getY()-(l.getMaxY())))) ;
 				}
-				/*double w = 0.5 * ((double)r.getWidth() + (double)l.getWidth());
-				double h = 0.5 *((double)r.getHeight() + (double)l.getHeight());
-				double ddx = r.getCenterX() - l.getCenterX();
-				double ddy = r.getCenterY() - l.getCenterY();
-
-				double wy = w * ddy;
-				double hx = h * ddx;
-
-  				if (wy > hx){
-					if (wy > -hx){
-						collision at the bottom 
-						orientation = 2*Math.PI-orientation;
-						dy = Math.abs(Math.abs((position.getY()-(l.getY()+l.getHeight())))-(double)r.getHeight()/2.0) + 1;
-					}
-
-					else{
-						on the left 
-						orientation = Math.PI-orientation;
-						dx = -Math.abs(Math.abs((position.getX()-l.getX()))-(double)r.getWidth()/2.0) - 1;
-					}
-				}
-
-				else{
-					if (wy > -hx){
-						 on the right 
-						orientation = Math.PI-orientation;
-						dx = Math.abs(Math.abs((position.getX()-(l.getX()+l.getWidth())))-(double)r.getWidth()/2.0) +1;
-					}
-
-					else{
-						 at the top 
-						orientation = 2*Math.PI-orientation;
-						dy = -Math.abs(Math.abs((position.getY()-l.getY()))-(double)r.getHeight()/2.0) -1;
-
-					}
-				}
-				 */
 				position.setLocation(position.getX()+dx,position.getY()+dy);
 				break;
 			}

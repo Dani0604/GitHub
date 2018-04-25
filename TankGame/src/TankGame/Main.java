@@ -18,10 +18,8 @@ public class Main {
 	public static void main(String[] args) {
 		
 		MainControl mc1 = new MainControl();
-		mc1.map = new Map();
-		GameControl c = new GameControl(mc1);
 		GUI g1 = new GUI(mc1, true);
-		g1.setPlayer(c.players.get(0));
+		g1.setPlayer(new Player(null));
 		mc1.setGui(g1);
 	}
 }

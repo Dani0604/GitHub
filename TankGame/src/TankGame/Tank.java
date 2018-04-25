@@ -46,7 +46,7 @@ public class Tank extends Element implements Serializable {
 					+ signs[i][1] * WIDTH / 2 * Math.cos(orientation)) + position.getY());
 		}
 		poly = new Polygon(xPoly, yPoly, xPoly.length);
-		//area = new Area(poly);
+		area = new Area(poly);
 	}
 
 	@Override
@@ -76,7 +76,7 @@ public class Tank extends Element implements Serializable {
 		finally{
 			s.release();
 		}			
-		//area = new Area(poly);
+		area = new Area(poly);
 	}
 
 	@Override

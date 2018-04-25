@@ -12,10 +12,9 @@ import java.awt.Point;
  */
 abstract class Network {
 
-	protected MainControl mctrl;
+	//protected MainControl mctrl;
 	
-	public Network(MainControl c){
-		mctrl = c;
+	public Network(){
 	}
 	
 	abstract void connect(String ip);

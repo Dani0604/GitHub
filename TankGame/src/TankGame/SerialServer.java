@@ -16,9 +16,10 @@ public class SerialServer extends Network {
 	private Socket clientSocket = null;
 	private ObjectOutputStream out = null;
 	private ObjectInputStream in = null;
-
-	SerialServer(MainControl c) {
-		super(c);
+	GameControl gctrl;
+	
+	SerialServer(GameControl c) {
+		gctrl = c;
 	}
 
 	private class ReceiverThread implements Runnable {
@@ -50,7 +51,7 @@ public class SerialServer extends Network {
 				while (true) {
 					System.out.println("Server received an object.");
 					Player received = (Player) in.readObject();
-					mctrl.playerReceived(received);
+					gctrl.playerReceived(received);
 				}
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
@@ -113,7 +114,7 @@ public class SerialServer extends Network {
 			return;
 		System.out.println("Sending map to Client");
 		try {
-			out.writeObject(mctrl.map.lines);
+			out.writeObject(gctrl.map.lines);
 			out.flush();
 		} catch (IOException ex) {
 			System.err.println("Send error.");

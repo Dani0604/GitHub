@@ -6,21 +6,13 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class MainControl {
-	public CopyOnWriteArrayList<Element> elements;
+	
 	private GUI gui;
 	private Network net;
 	public boolean is_server;
-	public Map map;
+	public GameControl gctrl;
 	
-	MainControl(){
-		elements = new CopyOnWriteArrayList<Element>();
-		newElement(300, 300, 0);
-	}
-	
-	Element newElement(int x, int y, double o) {
-		Element e = new Tank(x, y, o);
-		elements.add(e);
-		return e;
+	MainControl(){	
 	}
 
 	public GUI getGui() {
@@ -31,21 +23,9 @@ public class MainControl {
 		this.gui = gui;
 	}
 	
-	public void startServer(){
-		if(net != null){
-			net.disconnect();
-		}
-		net = new SerialServer(this);
-		net.connect("localhost");
-	}
 	
-	public void startClient(){
-		if(net != null){
-			net.disconnect();
-		}
-		net = new SerialClient(this);
-		net.connect("localhost");
-	}
+	
+	
 	
 	public void send(Player _player){
 		if(_player != null && net != null){
@@ -53,13 +33,7 @@ public class MainControl {
 		}
 	}
 	
-	void playerReceived(Player _player) {
-		if (gui == null)
-			return;
-		//gui.setPlayer(_player);
-	}
+	
 
-	void mapReceived(ArrayList<Rectangle> _r) {
-		this.map.lines = _r;
-	}
+	
 }

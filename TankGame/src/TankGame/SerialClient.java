@@ -14,14 +14,15 @@ public class SerialClient extends Network {
 	private Socket socket = null;
 	private ObjectOutputStream out = null;
 	private ObjectInputStream in = null;
-
+	private GUI gui;
+	
 	private class ReceiverThread implements Runnable {
 
 		public void run() {
 			try {
 				System.out.println("Terkep fogadasa.");
 				ArrayList<Rectangle> received = (ArrayList<Rectangle>) in.readObject();
-				mctrl.mapReceived(received);
+				gui.mapReceived(received);
 				System.out.println("Map received.");
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
@@ -34,7 +35,7 @@ public class SerialClient extends Network {
 				while (true) {
 					Player received = (Player) in.readObject();
 					System.out.println(received.tank.position);
-					mctrl.playerReceived(received);
+					gui.playerReceived(received);
 				}
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
@@ -65,8 +66,8 @@ public class SerialClient extends Network {
 		}
 	}
 
-	public SerialClient(MainControl c){
-		super(c);
+	public SerialClient(GUI gui){
+		this.gui = gui;
 	}
 	
 	@Override
