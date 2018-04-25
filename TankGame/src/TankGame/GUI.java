@@ -34,7 +34,7 @@ public class GUI extends JFrame {
 			while (true) {
 				drawPanel.repaint();
 				try {
-					Thread.sleep(25);
+					Thread.sleep(5);
 					double new_time;
 					new_time = System.currentTimeMillis();
 				    double delta = new_time - old_time;

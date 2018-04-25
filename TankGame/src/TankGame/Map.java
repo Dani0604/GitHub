@@ -54,30 +54,57 @@ public class Map implements Serializable{
 		public void save() {
 			for (int i = 0; i < y; i++) {
 				// save the north edge
+				Rectangle l1 = null;
 				for (int j = 0; j < x; j++) {
-					if ((maze[j][i] & 1) == 0){
-						if (i != 0 && j != 0 && Math.random() > 0.9)
-							continue;
-					Rectangle l1 = new Rectangle(j*MapWidth/ColumnNum,i*MapHeight/RowNum,MapWidth/ColumnNum,5);
-					lines.add(l1);
-					areas.add(new Area(l1) );
+					if ((maze[j][i] & 1) == 0 && Math.random() < 0.95 || i == 0){
+						int lx = (int) (l1 == null ? j*MapWidth/ColumnNum : l1.getX());
+						int ly = (int) (l1 == null ? i*MapHeight/RowNum : l1.getY());
+						int dx = (int) (l1 == null ? MapWidth/ColumnNum+5 : l1.getWidth() + MapWidth/ColumnNum);
+						l1 = new Rectangle(lx,ly,dx,5);
+					}
+					else{
+						if (l1 != null){
+							lines.add(l1);
+							areas.add(new Area(l1) );
+							l1 = null;
+						}
 					}
 					//System.out.print((maze[j][i] & 1) == 0 ? "+---" : "+   ");
 				}
+				if (l1 != null){
+					lines.add(l1);
+					areas.add(new Area(l1) );
+					l1 = null;
+				}
+			}
 				//System.out.println("+");
 				// save the west edge
-				for (int j = 0; j < x; j++) {
-					if ((maze[j][i] & 8) == 0){
-						if (i != 0 && j != 0 && Math.random() > 0.9)
-							continue;
-						Rectangle l1 = new Rectangle(j*MapWidth/ColumnNum,i*MapHeight/RowNum,5,MapHeight/RowNum);
-						lines.add(l1);
-						areas.add(new Area(l1) );
+			for (int j = 0; j < x; j++) {
+				Rectangle l1 = null;
+				for (int i = 0; i < y; i++) {
+					if (((maze[j][i] & 8) == 0  &&  Math.random() < 0.95) || j == 0){
+						int lx = (int) (l1 == null ? j*MapWidth/ColumnNum : l1.getX());
+						int ly = (int) (l1 == null ? i*MapHeight/RowNum : l1.getY());
+						int dy = (int) (l1 == null ? MapHeight/RowNum+5: l1.getHeight() + MapHeight/RowNum);
+						l1 = new Rectangle(lx,ly,5,dy);
 					}
-						//System.out.print((maze[j][i] & 8) == 0 ? "|   " : "    ");
+					else{
+						if (l1 != null){
+							lines.add(l1);
+							areas.add(new Area(l1) );
+							l1 = null;
+						}
+					}
 				}
-				//System.out.println("|");
+				if (l1 != null){
+					lines.add(l1);
+					areas.add(new Area(l1) );
+					l1 = null;
+				}
+				//System.out.print((maze[j][i] & 8) == 0 ? "|   " : "    ");
 			}
+			//System.out.println("|");
+
 			// save the bottom line
 			for (int j = 0; j < x; j++) {
 				//System.out.print("+---");

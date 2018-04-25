@@ -93,7 +93,7 @@ public class Tank extends Element implements Serializable {
 			try {
 				s.acquire();
 				g.drawPolygon(poly);
-				g.drawRect((int)poly.getBounds().getX(), (int)poly.getBounds().getY(), (int)poly.getBounds().getWidth(), (int)poly.getBounds().getHeight());
+				//g.drawRect((int)poly.getBounds().getX(), (int)poly.getBounds().getY(), (int)poly.getBounds().getWidth(), (int)poly.getBounds().getHeight());
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
