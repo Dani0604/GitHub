@@ -23,17 +23,4 @@ public class MainControl {
 		this.gui = gui;
 	}
 	
-	
-	
-	
-	
-	public void send(Player _player){
-		if(_player != null && net != null){
-			net.send(_player);
-		}
-	}
-	
-	
-
-	
 }

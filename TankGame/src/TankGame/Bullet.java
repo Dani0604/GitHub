@@ -1,13 +1,16 @@
 package TankGame;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -28,25 +31,22 @@ public class Bullet extends Element implements Serializable {
 		this.t = t;
 		velocity = VELOCITY;
 		lastColl = -1;
-		s = new Semaphore(1);
 	}
+
+	private void writeObject(java.io.ObjectOutputStream stream) throws IOException{
+	}
+
+	private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException{	
+	}	
+
+
 
 	@Override
 	public void draw(Graphics g) {
 		// TODO Auto-generated method stub
 		Graphics2D g2d = (Graphics2D) g;
-		try {
-			s.acquire();
-			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-			g2d.fill(circle);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} 
-		finally{
-			s.release();
-		}			
-
+		Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
+		g2d.fill(circle);
 	}
 
 	@Override
@@ -60,19 +60,9 @@ public class Bullet extends Element implements Serializable {
 		if (actMove < 0){
 			deleteElement = true;
 		}
-		try {
-			s.acquire();
-			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
-			area = new Area(circle);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		finally{
-			s.release();
-		}			
 
-
+		Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
+		area = new Area(circle);
 	}
 
 	@Override
@@ -129,7 +119,7 @@ public class Bullet extends Element implements Serializable {
 			if(!a.isEmpty()){
 				double dx = 0;
 				double dy = 0;
-				
+
 
 				//balról ütközés
 				if (prevCircle.getMaxX() < l.getMinX() && circle.getMaxX() >= l.getMinX()){

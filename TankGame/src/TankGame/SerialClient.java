@@ -5,21 +5,24 @@ import java.awt.geom.Area;
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JOptionPane;
 
+
 public class SerialClient extends Network {
 
-	
+
 	private Socket socket = null;
 	private ObjectOutputStream out = null;
 	private ObjectInputStream in = null;
 	private GUI gui;
-	
+
+
 	private class ReceiverThread implements Runnable {
 
 		public void run() {
-			try {
+			/*try {
 				System.out.println("Terkep fogadasa.");
 				ArrayList<Rectangle> received = (ArrayList<Rectangle>) in.readObject();
 				gui.mapReceived(received);
@@ -28,20 +31,31 @@ public class SerialClient extends Network {
 				System.out.println(ex.getMessage());
 				System.err.println("Server disconnected!");
 			}
-			
+*/
 			try {
 				System.out.println("Tankok fogadasa.");
-				Thread.sleep(50);
 				while (true) {
-					Player received = (Player) in.readObject();
+					/*	Player received = (Player) in.readObject();
 					System.out.println(received.tank.position);
 					gui.playerReceived(received);
+				}*/
+					GameState received = (GameState) in.readUnshared();
+					gui.gameStateReceived(received);
 				}
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
 				System.err.println("Server disconnected!");
 			} finally {
 				disconnect();
+			}
+
+			try {
+				System.out.println("Terkep fogadasa.");
+
+				System.out.println("Map received.");
+			} catch (Exception ex) {
+				System.out.println(ex.getMessage());
+				System.err.println("Server disconnected!");
 			}
 		}
 	}
@@ -69,15 +83,16 @@ public class SerialClient extends Network {
 	public SerialClient(GUI gui){
 		this.gui = gui;
 	}
+
 	
-	@Override
 	void send(Player _player) {
 		if (out == null)
 			return;
 		try {
-			out.writeObject(_player);
+			out.reset();
+			out.writeUnshared(_player);
 			out.flush();
-			System.out.println("Sending player to server.");
+		//	System.out.println("Sending player to server.");
 		} catch (IOException ex) {
 			System.err.println("Send error.");
 		}

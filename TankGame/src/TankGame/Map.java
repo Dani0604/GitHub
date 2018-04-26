@@ -3,6 +3,8 @@ package TankGame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
+import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +19,8 @@ public class Map implements Serializable{
 	private static int RowNum = 10;
 
 	MazeGenerator mazegenerator;
-
+	
+	
 	Map(){
 		lines = new ArrayList<Rectangle>();
 		areas = new ArrayList<Area>();

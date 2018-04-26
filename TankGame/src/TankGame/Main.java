@@ -19,7 +19,7 @@ public class Main {
 		
 		MainControl mc1 = new MainControl();
 		GUI g1 = new GUI(mc1, true);
-		g1.setPlayer(new Player(null));
+		//g1.setPlayer(new Player(null));
 		mc1.setGui(g1);
 	}
 }

@@ -21,5 +21,5 @@ abstract class Network {
 
 	abstract void disconnect();
 
-	abstract void send(Player _player);
+	
 }

@@ -14,10 +14,14 @@ import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 
 /**
  *
@@ -32,7 +36,7 @@ public class GUI extends JFrame {
 	private CopyOnWriteArrayList<Element> elements;
 	private Map map;
 	private SerialClient client;
-	
+
 	public class PeriodicDrawer extends Thread {
 		@Override
 		public void run() {
@@ -40,7 +44,7 @@ public class GUI extends JFrame {
 			while (true) {
 				drawPanel.repaint();
 				try {
-					Thread.sleep(5);
+					Thread.sleep(10);
 					double new_time;
 					new_time = System.currentTimeMillis();
 					double delta = new_time - old_time;
@@ -60,8 +64,9 @@ public class GUI extends JFrame {
 		public void run() {
 			while (true) {
 				try {
-					Thread.sleep(2500);
-					mctrl.send(player);
+					Thread.sleep(5);
+					//System.out.println(player.controls.moveForward);
+					send(player);
 				}
 				catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -91,7 +96,7 @@ public class GUI extends JFrame {
 		}
 
 		@Override
-		public void keyTyped(KeyEvent e) {   
+		public void keyTyped(KeyEvent e) {
 		}
 
 		@Override
@@ -141,13 +146,15 @@ public class GUI extends JFrame {
 				break;
 			}
 		}
-
 	}
 
 	GUI(MainControl mc, boolean _is_server) {
 		super("Tanks");
 		mctrl = mc;
 		mctrl.is_server = _is_server;
+		map = new Map();
+		player = new Player(null);
+		
 		setSize(1024, 1024);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
@@ -161,7 +168,6 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//System.exit(0);
-
 				//start gomb funkciója...
 			}
 		});
@@ -181,14 +187,17 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				mctrl.gctrl = new GameControl(mctrl);
-				startClient();
+				startClient("localhost");
+				Thread networkthread = new PeriodicPlayerUpdater();
+				networkthread.start();
 			}
 		});
 		JMenuItem client = new JMenuItem("Client");
 		client.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {				
-				startClient();
+				//startClient("192.168.0.104");
+				startClient("localhost");
 				Thread networkthread = new PeriodicPlayerUpdater();
 				networkthread.start();
 			}
@@ -207,6 +216,17 @@ public class GUI extends JFrame {
 
 		add(drawPanel);
 
+		JPanel p = new JPanel();
+		JTextField Name = new JTextField(10);
+
+		p.add(new JLabel("Name:"));
+		p.add(Name);
+		
+		int input = JOptionPane.showConfirmDialog(null, p, "Name : ", JOptionPane.OK_CANCEL_OPTION);
+		if(input == JOptionPane.OK_OPTION)
+		{
+			player.name = Name.getText();
+		}
 		Thread t = new PeriodicDrawer();
 		t.start();
 
@@ -221,21 +241,35 @@ public class GUI extends JFrame {
 		this.player = player;
 	}
 
-	public void mapReceived(ArrayList<Rectangle> _r) {
-		map = new Map();
-		map.lines = _r;
+	/*public void playerReceived(Player _player) {
+		setPlayer(_player);
+	}*/
+	
+	public void gameStateReceived(GameState gamestate){
+		if (gamestate.elements != null)
+			this.elements = gamestate.elements;
+		else 
+			this.elements = new CopyOnWriteArrayList<Element>();
+		this.map.lines = new ArrayList<Rectangle>(gamestate.map);
+		for (int i = 0; i < gamestate.players.size(); i++) {
+			Player p = gamestate.players.get(i);
+			if (p.name.equals(player.name)){
+				player.tank = p.tank;
+			}
+		}
 	}
 
-	public void playerReceived(Player _player) {
-		setPlayer(_player);
-	}
-	
-	public void startClient(){
+	public void startClient(String ip){
 		if(client != null){
 			client.disconnect();
 		}
 		client = new SerialClient(this);
-		client.connect("localhost");
+		client.connect(ip);
 	}
-
+	
+	public void send(Player _player){
+		if(_player != null && client != null){
+			client.send(_player);
+		}
+	}
 }

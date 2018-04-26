@@ -1,18 +1,33 @@
 package TankGame;
 
 import java.awt.Graphics;
+import java.awt.Shape;
 import java.awt.geom.Point2D;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.Semaphore;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
-abstract public class Element{
+abstract public class Element implements Serializable{
 	protected Point2D position; // kirajzolás poziciója
 	protected double orientation; // orientáció megadása radiánban
 	protected double velocity; // elem mozgásának sebessége
-	
 	protected Area area;
-	protected Semaphore s;
+	
+	
+	private void writeObject(java.io.ObjectOutputStream stream) throws IOException{
+		stream.writeObject(position);
+		stream.writeObject(orientation);		
+	}
+	
+	private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException{
+		position = (Point2D) stream.readObject();
+		orientation = (double)stream.readObject();		
+	}	
+	
+	
+	//protected Semaphore s;
 	protected enum Type {
 		WALL,
 		TANK,
