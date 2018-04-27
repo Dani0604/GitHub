@@ -1,23 +1,27 @@
 package TankGame;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.Graphics2D;
 import java.awt.Polygon;
 import java.awt.Rectangle;
+import java.awt.Stroke;
 import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-
-import TankGame.Element.Type;
 
 public class Tank extends Element implements Serializable {
 
-	static final int LENGTH = 30;
-	private static final int WIDTH = 20;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	static final int LENGTH = 22;
+	private static final int WIDTH = 15;
 	private static final int VELOCITY = 200;
+	private static final double BACKWARD_SPEED_MULTIPLIER = 0.75;
 	private int health;
 	private Color color;
 	private Polygon poly;
@@ -37,33 +41,34 @@ public class Tank extends Element implements Serializable {
 
 
 	public Tank(Map map) {
-		// TODO
 
 		do {
-			position = new Point2D.Double(Math.random()*Map.MapWidth, Math.random()*Map.MapHeight);
+			position = new Point2D.Double(Math.random()*map.MapWidth, Math.random()*map.MapHeight);
 			orientation = Math.random()*Math.PI;
-			int xPoly[] = { 1, 1, 1, 1 };
-			int yPoly[] = { 1, 1, 1, 1 };
-			int signs[][] = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
-			for (int i = 0; i < 4; i++) {
-				xPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.cos(orientation)
-						- signs[i][1] * WIDTH / 2 * Math.sin(orientation)) + position.getX());
-				yPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.sin(orientation)
-						+ signs[i][1] * WIDTH / 2 * Math.cos(orientation)) + position.getY());
-			}
-			poly = new Polygon(xPoly, yPoly, xPoly.length);
+			poly = getPoly();
 			area = new Area(poly);
 		}
-		while(is_wallCollision(map) != -1);
+		while(is_wallCollision(map));
 		velocity = VELOCITY;
 		nextBullet = new Bullet(this);
 		health = 1;
-
-
-
-
 	}
+	
 
+
+	private Polygon getPoly(){
+		int xPoly[] = { 1, 1, 1, 1 };
+		int yPoly[] = { 1, 1, 1, 1 };
+		int signs[][] = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
+		for (int i = 0; i < 4; i++) {
+			xPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.cos(orientation)
+					- signs[i][1] * WIDTH / 2 * Math.sin(orientation)) + position.getX());
+			yPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.sin(orientation)
+					+ signs[i][1] * WIDTH / 2 * Math.cos(orientation)) + position.getY());
+		}
+
+		return new Polygon(xPoly, yPoly, xPoly.length);
+	}
 	public Tank(Tank tank) {
 		// TODO Auto-generated constructor stub
 	}
@@ -76,17 +81,12 @@ public class Tank extends Element implements Serializable {
 			double dy = (velocity * T / 1000.0 * Math.sin(orientation));
 			position.setLocation(position.getX() + dx,position.getY() + dy);
 		}
-		int xPoly[] = { 1, 1, 1, 1 };
-		int yPoly[] = { 1, 1, 1, 1 };
-		int signs[][] = { { 1, 1 }, { -1, 1 }, { -1, -1 }, { 1, -1 } };
-		for (int i = 0; i < 4; i++) {
-			xPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.cos(orientation)
-					- signs[i][1] * WIDTH / 2 * Math.sin(orientation)) + position.getX());
-			yPoly[i] = (int) ((signs[i][0] * LENGTH / 2 * Math.sin(orientation)
-					+ signs[i][1] * WIDTH / 2 * Math.cos(orientation)) + position.getY());
+		if (getPlayer().controls.moveBackward) {
+			double dx = -(velocity*BACKWARD_SPEED_MULTIPLIER * T / 1000.0 * Math.cos(orientation));
+			double dy = -(velocity*BACKWARD_SPEED_MULTIPLIER * T / 1000.0 * Math.sin(orientation));
+			position.setLocation(position.getX() + dx,position.getY() + dy);
 		}
-
-		poly = new Polygon(xPoly, yPoly, xPoly.length);
+		poly = getPoly();
 		area = new Area(poly);
 	}
 
@@ -112,7 +112,16 @@ public class Tank extends Element implements Serializable {
 		// TODO Auto-generated method stub
 
 		if (g != null) {
-			g.drawPolygon(poly);
+			Graphics2D g2d = (Graphics2D)g;
+			Stroke s = g2d.getStroke();
+			g2d.setStroke(new BasicStroke(5));
+			g2d.setColor(Color.black);
+			g2d.drawPolygon(poly);
+			g2d.setStroke(s);
+			g2d.setColor(Color.red);
+			g2d.fillPolygon(poly);
+			g2d.setColor(Color.black);
+			
 		}
 	}
 
@@ -135,59 +144,64 @@ public class Tank extends Element implements Serializable {
 
 	}
 
-	private int is_wallCollision(Map map){
+	private boolean is_wallCollision(Map map){
 
-		for (int i = 0; i < Map.lines.size(); i++) { 
+		for (int i = 0; i < map.lines.size(); i++) { 
 			Area a = new Area(poly);
-			a.intersect(new Area(Map.lines.get(i)));
-			if(!a.isEmpty()) return i;
+			a.intersect(new Area(map.lines.get(i)));
+			if(!a.isEmpty()) return true;
 		}
-		return -1;
+		return false;
 	}
 
 	@Override
 	public void wallCollision(Map map){
-		int i =is_wallCollision(map);
 		Rectangle r = poly.getBounds();
-		if(i != -1){
-			double dx = 0;
-			double dy = 0;
-			Rectangle l = Map.lines.get(i);
-			double w = 0.5 * (r.getWidth() + l.getWidth());
-			double h = 0.5 * (r.getHeight() + l.getHeight());
-			double ddx = r.getCenterX() - l.getCenterX();
-			double ddy = r.getCenterY() - l.getCenterY();
+
+		for (int i = 0; i < map.lines.size(); i++) { 
+			Area a = new Area(poly);
+			a.intersect(new Area(map.lines.get(i)));
+
+			if(!a.isEmpty()){
+				double dx = 0;
+				double dy = 0;
+				Rectangle l = map.lines.get(i);
+				double w = 0.5 * (r.getWidth() + l.getWidth());
+				double h = 0.5 * (r.getHeight() + l.getHeight());
+				double ddx = r.getCenterX() - l.getCenterX();
+				double ddy = r.getCenterY() - l.getCenterY();
 
 
-			/* collision! */
-			double wy = w * ddy;
-			double hx = h * ddx;
+				/* collision! */
+				double wy = w * ddy;
+				double hx = h * ddx;
 
-			if (wy > hx){
-				if (wy > -hx){
-					/* collision at the top */
-					dy = Math.abs(Math.abs((position.getY()-(l.getY()+l.getHeight())))-(double)r.getHeight()/2.0);
+				if (wy > hx){
+					if (wy > -hx){
+						/* collision at the top */
+						dy = Math.abs(Math.abs((position.getY()-(l.getY()+l.getHeight())))-(double)r.getHeight()/2.0);
+					}
+
+					else{
+						/* on the left */
+						dx = -Math.abs(Math.abs((position.getX()-l.getX()))-(double)r.getWidth()/2.0);
+					}
 				}
 
 				else{
-					/* on the left */
-					dx = -Math.abs(Math.abs((position.getX()-l.getX()))-(double)r.getWidth()/2.0);
+					if (wy > -hx){
+						/* on the right */
+						dx = Math.abs(Math.abs((position.getX()-(l.getX()+l.getWidth())))-(double)r.getWidth()/2.0);
+					}
+
+					else{
+						/* at the bottom */
+						dy = -Math.abs(Math.abs((position.getY()-l.getY()))-(double)r.getHeight()/2.0);
+
+					}
 				}
+				position.setLocation(position.getX() + dx,position.getY() + dy);
 			}
-
-			else{
-				if (wy > -hx){
-					/* on the right */
-					dx = Math.abs(Math.abs((position.getX()-(l.getX()+l.getWidth())))-(double)r.getWidth()/2.0);
-				}
-
-				else{
-					/* at the bottom */
-					dy = -Math.abs(Math.abs((position.getY()-l.getY()))-(double)r.getHeight()/2.0);
-
-				}
-			}
-			position.setLocation(position.getX() + dx,position.getY() + dy);
 		}
 
 

@@ -22,6 +22,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import TankGame.GUI.PeriodicPlayerUpdater;
+
 
 /**
  *
@@ -59,6 +61,7 @@ public class GUI extends JFrame {
 		}
 	}
 
+	
 	public class PeriodicPlayerUpdater extends Thread {
 		@Override
 		public void run() {
@@ -75,6 +78,8 @@ public class GUI extends JFrame {
 			}
 		}
 	}
+	
+	
 
 	public class DrawPanel extends JPanel implements KeyListener {
 		private static final long serialVersionUID = 1L;
@@ -109,6 +114,7 @@ public class GUI extends JFrame {
 				break;
 			case KeyEvent.VK_DOWN:
 				// handle down
+				player.controls.moveBackward = false;
 				break;
 			case KeyEvent.VK_LEFT:
 				player.controls.turnLeft = false;
@@ -133,6 +139,7 @@ public class GUI extends JFrame {
 				break;
 			case KeyEvent.VK_DOWN:
 				// handle down
+				player.controls.moveBackward = true;
 				break;
 			case KeyEvent.VK_LEFT:
 				player.controls.turnLeft = true;
@@ -147,6 +154,7 @@ public class GUI extends JFrame {
 			}
 		}
 	}
+
 
 	GUI(MainControl mc, boolean _is_server) {
 		super("Tanks");
@@ -186,10 +194,7 @@ public class GUI extends JFrame {
 		server.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				mctrl.gctrl = new GameControl(mctrl);
-				startClient("localhost");
-				Thread networkthread = new PeriodicPlayerUpdater();
-				networkthread.start();
+				mctrl.stateMachine.onEventHostGame(mctrl);
 			}
 		});
 		JMenuItem client = new JMenuItem("Client");
@@ -263,6 +268,10 @@ public class GUI extends JFrame {
 		if(client != null){
 			client.disconnect();
 		}
+		startClient("localhost");
+		Thread networkthread = new PeriodicPlayerUpdater();
+		networkthread.start();
+	
 		client = new SerialClient(this);
 		client.connect(ip);
 	}

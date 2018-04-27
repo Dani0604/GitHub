@@ -5,16 +5,19 @@ import java.awt.geom.Area;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import TankGame.GUI.PeriodicPlayerUpdater;
+
 public class MainControl {
-	
-	private GUI gui;
+
+	public GUI gui;
 	private Network net;
 	public boolean is_server;
 	public GameControl gctrl;
-	
-	MainControl(){	
-	}
+	public StateMachine stateMachine;
 
+	MainControl(){	
+		stateMachine = new StateMachine();
+	}
 	public GUI getGui() {
 		return gui;
 	}
@@ -22,5 +25,4 @@ public class MainControl {
 	public void setGui(GUI gui) {
 		this.gui = gui;
 	}
-	
 }

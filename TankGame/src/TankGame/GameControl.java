@@ -158,6 +158,7 @@ class GameControl {
 				//System.out.println(_player.controls.moveForward);
 				//System.out.println(i);
 				p.controls.moveForward = _player.controls.moveForward;
+				p.controls.moveBackward = _player.controls.moveBackward;
 				p.controls.shoot = _player.controls.shoot;
 				p.controls.turnLeft = _player.controls.turnLeft;
 				p.controls.turnRight = _player.controls.turnRight;

@@ -27,6 +27,9 @@ public class Player implements Serializable  {
 
 		public boolean moveForward;
 		public boolean moveForward_old;
+		
+		public boolean moveBackward;
+		public boolean moveBackward_old;
 
 		public boolean shoot;
 		public boolean shoot_old;

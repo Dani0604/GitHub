@@ -11,12 +11,12 @@ import java.util.Collections;
 import java.util.Arrays;
 
 public class Map implements Serializable{
-	public static ArrayList<Rectangle> lines;
-	public static ArrayList<Area> areas;
-	public final static int MapHeight = 800;
-	public final static int MapWidth = 800;
-	private static int ColumnNum = 10;
-	private static int RowNum = 10;
+	public  ArrayList<Rectangle> lines;
+	public ArrayList<Area> areas;
+	public final int MapHeight = 800;
+	public final int MapWidth = 800;
+	private int ColumnNum = 10;
+	private int RowNum = 10;
 
 	MazeGenerator mazegenerator;
 	
@@ -31,6 +31,7 @@ public class Map implements Serializable{
 		lines.add(l1);
 		areas.add(new Area(l1) );
 		mazegenerator = new MazeGenerator(ColumnNum,RowNum);
+		save();
 	}
 
 	void draw(Graphics g){
@@ -40,6 +41,61 @@ public class Map implements Serializable{
 		}
 	}
 
+	public void save() {
+		for (int i = 0; i < mazegenerator.y; i++) {
+			// save the north edge
+			Rectangle l1 = null;
+			for (int j = 0; j < mazegenerator.x; j++) {
+				if ((mazegenerator.maze[j][i] & 1) == 0 && Math.random() < 0.9 || i == 0){
+					int lx = (int) (l1 == null ? j*MapWidth/ColumnNum : l1.getX());
+					int ly = (int) (l1 == null ? i*MapHeight/RowNum : l1.getY());
+					int dx = (int) (l1 == null ? MapWidth/ColumnNum+5 : l1.getWidth() + MapWidth/ColumnNum);
+					l1 = new Rectangle(lx,ly,dx,5);
+				}
+				else{
+					if (l1 != null){
+						lines.add(l1);
+						areas.add(new Area(l1) );
+						l1 = null;
+					}
+				}
+			}
+			if (l1 != null){
+				lines.add(l1);
+				areas.add(new Area(l1) );
+				l1 = null;
+			}
+		}
+			// save the west edge
+		for (int j = 0; j < mazegenerator.x; j++) {
+			Rectangle l1 = null;
+			for (int i = 0; i < mazegenerator.y; i++) {
+				if (((mazegenerator.maze[j][i] & 8) == 0  &&  Math.random() < 0.9) || j == 0){
+					int lx = (int) (l1 == null ? j*MapWidth/ColumnNum : l1.getX());
+					int ly = (int) (l1 == null ? i*MapHeight/RowNum : l1.getY());
+					int dy = (int) (l1 == null ? MapHeight/RowNum+5: l1.getHeight() + MapHeight/RowNum);
+					l1 = new Rectangle(lx,ly,5,dy);
+				}
+				else{
+					if (l1 != null){
+						lines.add(l1);
+						areas.add(new Area(l1) );
+						l1 = null;
+					}
+				}
+			}
+			if (l1 != null){
+				lines.add(l1);
+				areas.add(new Area(l1) );
+				l1 = null;
+			}
+			
+		}
+
+	}
+
+
+	
 	public static class MazeGenerator {
 		private final int x;
 		private final int y;
@@ -50,72 +106,11 @@ public class Map implements Serializable{
 			this.y = y;
 			maze = new int[this.x][this.y];
 			generateMaze(0, 0);
-			save();
+			
 
 		}
 
-		public void save() {
-			for (int i = 0; i < y; i++) {
-				// save the north edge
-				Rectangle l1 = null;
-				for (int j = 0; j < x; j++) {
-					if ((maze[j][i] & 1) == 0 && Math.random() < 0.95 || i == 0){
-						int lx = (int) (l1 == null ? j*MapWidth/ColumnNum : l1.getX());
-						int ly = (int) (l1 == null ? i*MapHeight/RowNum : l1.getY());
-						int dx = (int) (l1 == null ? MapWidth/ColumnNum+5 : l1.getWidth() + MapWidth/ColumnNum);
-						l1 = new Rectangle(lx,ly,dx,5);
-					}
-					else{
-						if (l1 != null){
-							lines.add(l1);
-							areas.add(new Area(l1) );
-							l1 = null;
-						}
-					}
-					//System.out.print((maze[j][i] & 1) == 0 ? "+---" : "+   ");
-				}
-				if (l1 != null){
-					lines.add(l1);
-					areas.add(new Area(l1) );
-					l1 = null;
-				}
-			}
-				//System.out.println("+");
-				// save the west edge
-			for (int j = 0; j < x; j++) {
-				Rectangle l1 = null;
-				for (int i = 0; i < y; i++) {
-					if (((maze[j][i] & 8) == 0  &&  Math.random() < 0.95) || j == 0){
-						int lx = (int) (l1 == null ? j*MapWidth/ColumnNum : l1.getX());
-						int ly = (int) (l1 == null ? i*MapHeight/RowNum : l1.getY());
-						int dy = (int) (l1 == null ? MapHeight/RowNum+5: l1.getHeight() + MapHeight/RowNum);
-						l1 = new Rectangle(lx,ly,5,dy);
-					}
-					else{
-						if (l1 != null){
-							lines.add(l1);
-							areas.add(new Area(l1) );
-							l1 = null;
-						}
-					}
-				}
-				if (l1 != null){
-					lines.add(l1);
-					areas.add(new Area(l1) );
-					l1 = null;
-				}
-				//System.out.print((maze[j][i] & 8) == 0 ? "|   " : "    ");
-			}
-			//System.out.println("|");
-
-			// save the bottom line
-			for (int j = 0; j < x; j++) {
-				//System.out.print("+---");
-			}
-			//System.out.println("+");
-		}
-
-		private void generateMaze(int cx, int cy) {
+				private void generateMaze(int cx, int cy) {
 			DIR[] dirs = DIR.values();
 			Collections.shuffle(Arrays.asList(dirs));
 			for (DIR dir : dirs) {
@@ -130,7 +125,7 @@ public class Map implements Serializable{
 			}
 		}
 
-		private static boolean between(int v, int upper) {
+		private boolean between(int v, int upper) {
 			return (v >= 0) && (v < upper);
 		}
 

@@ -22,7 +22,7 @@ public class Bullet extends Element implements Serializable {
 	private static final double MAX_MOVE = 2000; 
 	private double actMove = MAX_MOVE;
 	private static final int DIAMETER = 7;
-	private Point2D prevPos;
+	
 	private Tank t;
 	protected static final int MAX_BULLETNUM = 5;
 	private int lastColl;
@@ -85,8 +85,8 @@ public class Bullet extends Element implements Serializable {
 			t.bulletCounter++;
 			position = new Point2D.Double();
 			prevPos = new Point2D.Double();
-			position.setLocation(t.position.getX() + ((Tank.LENGTH / 2 + DIAMETER*3) * Math.cos(t.orientation)),
-					t.position.getY() + ((Tank.LENGTH / 2 + DIAMETER*5) * Math.sin(t.orientation)));
+			position.setLocation(t.position.getX() + ((Tank.LENGTH / 2 + DIAMETER*2) * Math.cos(t.orientation)),
+					t.position.getY() + ((Tank.LENGTH / 2 + DIAMETER*2) * Math.sin(t.orientation)));
 			prevPos.setLocation(position);
 			orientation = t.orientation;
 			Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
@@ -112,9 +112,9 @@ public class Bullet extends Element implements Serializable {
 	public void wallCollision(Map map){
 		Ellipse2D.Double circle = new Ellipse2D.Double(position.getX(), position.getY(), DIAMETER, DIAMETER);
 		Ellipse2D.Double prevCircle = new Ellipse2D.Double(prevPos.getX(), prevPos.getY(), DIAMETER, DIAMETER);
-		for (int i = 0; i < Map.lines.size(); i++) { 
+		for (int i = 0; i < map.lines.size(); i++) { 
 			Area a = new Area(circle);
-			Rectangle l = Map.lines.get(i);
+			Rectangle l = map.lines.get(i);
 			a.intersect(new Area(l));
 			if(!a.isEmpty()){
 				double dx = 0;

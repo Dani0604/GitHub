@@ -39,7 +39,7 @@ public class SerialServer extends Network {
 			while(true){
 				send(gctrl.gameState);
 				try {
-					Thread.sleep(25);
+					Thread.sleep(5);
 				} 
 				catch (InterruptedException e) {
 					// TODO Auto-generated catch block
@@ -61,9 +61,7 @@ public class SerialServer extends Network {
 				System.out.println("Waiting for Client");
 				clientSocket.add(serverSocket.accept());
 				System.out.println("Client connected.");
-				System.out.println("Waiting for Client");
-				clientSocket.add(serverSocket.accept());
-				System.out.println("Client connected.");
+				
 
 				for (int i = 0; i < clientSocket.size(); i++) { 
 					out.add(new ObjectOutputStream(clientSocket.get(i).getOutputStream()));
@@ -116,7 +114,6 @@ public class SerialServer extends Network {
 			System.err.println("Could not listen on port: 10007.");
 		}
 	}
-
 
 	@Override
 	void disconnect() {

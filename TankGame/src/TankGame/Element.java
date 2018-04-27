@@ -1,16 +1,14 @@
 package TankGame;
 
 import java.awt.Graphics;
-import java.awt.Shape;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.concurrent.Semaphore;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 
 abstract public class Element implements Serializable{
 	protected Point2D position; // kirajzolás poziciója
+	protected Point2D prevPos;
 	protected double orientation; // orientáció megadása radiánban
 	protected double velocity; // elem mozgásának sebessége
 	protected Area area;
