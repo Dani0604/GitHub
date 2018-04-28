@@ -38,7 +38,8 @@ public class GUI extends JFrame {
 	private CopyOnWriteArrayList<Element> elements;
 	private Map map;
 	private SerialClient client;
-
+	private String Serverip;
+	
 	public class PeriodicDrawer extends Thread {
 		@Override
 		public void run() {
@@ -61,10 +62,11 @@ public class GUI extends JFrame {
 		}
 	}
 
-	
+
 	public class PeriodicPlayerUpdater extends Thread {
 		@Override
 		public void run() {
+			client.connect(Serverip);
 			while (true) {
 				try {
 					Thread.sleep(5);
@@ -78,8 +80,8 @@ public class GUI extends JFrame {
 			}
 		}
 	}
-	
-	
+
+
 
 	public class DrawPanel extends JPanel implements KeyListener {
 		private static final long serialVersionUID = 1L;
@@ -162,7 +164,7 @@ public class GUI extends JFrame {
 		mctrl.is_server = _is_server;
 		map = new Map();
 		player = new Player(null);
-		
+
 		setSize(1024, 1024);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLayout(null);
@@ -202,9 +204,7 @@ public class GUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {				
 				//startClient("192.168.0.104");
-				startClient("localhost");
-				Thread networkthread = new PeriodicPlayerUpdater();
-				networkthread.start();
+				mctrl.stateMachine.onEventJoinGame(mctrl);
 			}
 		});
 		network.add(client);
@@ -226,7 +226,7 @@ public class GUI extends JFrame {
 
 		p.add(new JLabel("Name:"));
 		p.add(Name);
-		
+
 		int input = JOptionPane.showConfirmDialog(null, p, "Name : ", JOptionPane.OK_CANCEL_OPTION);
 		if(input == JOptionPane.OK_OPTION)
 		{
@@ -249,7 +249,7 @@ public class GUI extends JFrame {
 	/*public void playerReceived(Player _player) {
 		setPlayer(_player);
 	}*/
-	
+
 	public void gameStateReceived(GameState gamestate){
 		if (gamestate.elements != null)
 			this.elements = gamestate.elements;
@@ -268,14 +268,16 @@ public class GUI extends JFrame {
 		if(client != null){
 			client.disconnect();
 		}
-		startClient("localhost");
+		
+		client = new SerialClient(this);
+		Serverip = ip;
+		
 		Thread networkthread = new PeriodicPlayerUpdater();
 		networkthread.start();
-	
-		client = new SerialClient(this);
-		client.connect(ip);
+
+		
 	}
-	
+
 	public void send(Player _player){
 		if(_player != null && client != null){
 			client.send(_player);

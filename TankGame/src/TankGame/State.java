@@ -23,7 +23,7 @@ enum State implements StateEventListener {
 		@Override
 		public void onEventJoinGame(MainControl mctrl) {
 			// TODO Auto-generated method stub
-
+			mctrl.gui.startClient("localhost");
 		}
 
 		@Override
@@ -146,7 +146,7 @@ enum State implements StateEventListener {
 
 
 class StateMachine implements StateEventListener {
-	State currentState;
+	State currentState = State.MainMenu;
 
 	@Override
 	public void onEventHostGame(MainControl mctrl) {
