@@ -3,14 +3,16 @@ package TankGame;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
-import java.awt.geom.Point2D;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Arrays;
 
 public class Map implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -3563860244579098363L;
 	public  ArrayList<Rectangle> lines;
 	public ArrayList<Area> areas;
 	public final int MapHeight = 800;
@@ -21,7 +23,7 @@ public class Map implements Serializable{
 	MazeGenerator mazegenerator;
 	
 	
-	Map(){
+	public Map(){
 		lines = new ArrayList<Rectangle>();
 		areas = new ArrayList<Area>();
 		Rectangle l1 = new Rectangle(MapWidth-5,0,5,MapHeight);
@@ -34,7 +36,7 @@ public class Map implements Serializable{
 		save();
 	}
 
-	void draw(Graphics g){
+	public void draw(Graphics g){
 		for (int i = 0; i < lines.size(); i++) { 
 			Rectangle r = lines.get(i);
 			g.fillRect((int)r.getX(),(int)r.getY(),(int)r.getWidth(),(int)r.getHeight());

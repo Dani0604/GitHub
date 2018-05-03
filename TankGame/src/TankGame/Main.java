@@ -5,6 +5,8 @@
 
 package TankGame;
 
+import GUI_Pack.GUI;
+
 /**
  *
  * @author Predi
@@ -16,10 +18,8 @@ public class Main {
 	 *            the command line arguments
 	 */
 	public static void main(String[] args) {
-		
-		MainControl mc1 = new MainControl();
-		GUI g1 = new GUI(mc1, true);
-		//g1.setPlayer(new Player(null));
-		mc1.setGui(g1);
+		StateMachine SM = new StateMachine();
+		GUI g = new GUI(SM);
+		SM.setGui(g);
 	}
 }

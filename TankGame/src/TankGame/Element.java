@@ -7,6 +7,10 @@ import java.io.Serializable;
 import java.awt.geom.Area;
 
 abstract public class Element implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4617701502825832245L;
 	protected Point2D position; // kirajzolás poziciója
 	protected Point2D prevPos;
 	protected double orientation; // orientáció megadása radiánban

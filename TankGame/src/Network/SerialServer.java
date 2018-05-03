@@ -1,15 +1,17 @@
-package TankGame;
+package Network;
 
-import java.awt.Point;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import TankGame.GameControl;
+import TankGame.GameState;
+import TankGame.Player;
 
 public class SerialServer extends Network {
 
@@ -20,10 +22,10 @@ public class SerialServer extends Network {
 	private ArrayList<ObjectInputStream> in = null;
 	private ArrayList<Thread> rec = null;
 	private PeriodicControl pc;
-	private WaitForClientThread wc;
+	private Thread wc;
 	GameControl gctrl;
 
-	SerialServer(GameControl c) {
+	public SerialServer(GameControl c) {
 		gctrl = c;
 		pc = new PeriodicControl();
 		pc.start();
@@ -53,29 +55,30 @@ public class SerialServer extends Network {
 
 
 		public void run() {
-			try {
-				//while(true){
-				System.out.println("Waiting for Client");
-				clientSocket.add(serverSocket.accept());
-				System.out.println("Client connected.");
-				System.out.println("Waiting for Client");
-				clientSocket.add(serverSocket.accept());
-				System.out.println("Client connected.");
-				
+			
+				while(true){
+					try {
+					System.out.println("Waiting for Client");
+					clientSocket.add(serverSocket.accept());
+					System.out.println("Client connected.");
 
-				for (int i = 0; i < clientSocket.size(); i++) { 
-					out.add(new ObjectOutputStream(clientSocket.get(i).getOutputStream()));
-					in.add(new ObjectInputStream(clientSocket.get(i).getInputStream()));
-					out.get(i).flush();
-					rec.add(new Thread(new ReceiverThread(i)));
-					rec.get(i).start();
+					out.add(new ObjectOutputStream(clientSocket.get(clientSocket.size()-1).getOutputStream()));
+					in.add(new ObjectInputStream(clientSocket.get(clientSocket.size()-1).getInputStream()));
+					out.get(clientSocket.size()-1).flush();
+					rec.add(new Thread(new ReceiverThread(clientSocket.size()-1)));
+					rec.get(clientSocket.size()-1).start();
+					} catch (IOException e) {
+					//	System.err.println(e.getMessage());
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
 				}
 				//}
-			} catch (IOException e) {
-				System.err.println("Accept failed.");
-				disconnect();
-				return;
-			}
+			
 		}
 	}
 	private class ReceiverThread implements Runnable {
@@ -96,7 +99,7 @@ public class SerialServer extends Network {
 				}
 			} catch (Exception ex) {
 				System.out.println(ex.getMessage());
-				System.err.println("Client disconnected!");					
+				//System.err.println("Client disconnected!");					
 			} finally {
 				disconnect();
 			}
@@ -104,11 +107,11 @@ public class SerialServer extends Network {
 	}
 
 	@Override
-	void connect(String ip) {
+	public void connect(String ip) {
 		disconnect();
 		try {
 			serverSocket = new ServerSocket(10007);
-			Thread wc = new Thread(new WaitForClientThread());
+			wc = new Thread(new WaitForClientThread());
 			wc.start();
 		} catch (IOException e) {
 			System.err.println("Could not listen on port: 10007.");
@@ -116,7 +119,7 @@ public class SerialServer extends Network {
 	}
 
 	@Override
-	void disconnect() {
+	public void disconnect() {
 		try {
 			for (int i = 0; i < out.size(); i++) { 
 				if (out.get(i) != null)
@@ -138,22 +141,6 @@ public class SerialServer extends Network {
 		}
 	}
 
-	/**
-	 *A kliens csatlakozása után elküldi neki a térképet.
-	 * @author Gyozo
-	 */
-	/*void sendMap(){
-		if (out == null)
-			return;
-		//System.out.println("Sending map to Client");
-		try {
-			out.writeObject(gctrl.map.lines);
-			out.flush();
-		} catch (IOException ex) {
-			System.err.println("Send error.");
-		}
-	}*/
-
 	public void send(GameState gameState){
 		if (out == null)
 			return;
@@ -167,7 +154,6 @@ public class SerialServer extends Network {
 
 		} catch (IOException ex) {
 			System.err.println(ex.getMessage());
-			System.err.println("Send error.");
 		}
 	}
 

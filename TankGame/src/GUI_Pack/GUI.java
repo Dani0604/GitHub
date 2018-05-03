@@ -2,27 +2,28 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package TankGame;
+package GUI_Pack;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import javax.swing.AbstractListModel;
+import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JTextField;
-
-import TankGame.GUI.PeriodicPlayerUpdater;
+import Network.SerialClient;
+import TankGame.Element;
+import TankGame.GameState;
+import TankGame.Map;
+import TankGame.Player;
+import TankGame.State;
+import TankGame.StateEventListener;
+import TankGame.StateMachine;
 
 
 /**
@@ -30,16 +31,25 @@ import TankGame.GUI.PeriodicPlayerUpdater;
  * @author Predi
  */
 
-public class GUI extends JFrame {
-
-	private MainControl mctrl;
+public class GUI implements StateEventListener {
+	private JFrame frmWorkOfTanks;
+	
+	private StateMachine SM;
 	private DrawPanel drawPanel;
 	private Player player;
 	private CopyOnWriteArrayList<Element> elements;
+	public 	CopyOnWriteArrayList<Player> players;
 	private Map map;
 	private SerialClient client;
 	private String Serverip;
 	
+	
+	public MainMenu mainmenu;
+	public HostGame hostGame;
+	public JoinGame joinGame;
+	public Lobby lobby;
+	
+
 	public class PeriodicDrawer extends Thread {
 		@Override
 		public void run() {
@@ -51,7 +61,7 @@ public class GUI extends JFrame {
 					double new_time;
 					new_time = System.currentTimeMillis();
 					double delta = new_time - old_time;
-					double fps = 1 / (delta / 1000);
+					//double fps = 1 / (delta / 1000);
 					old_time = new_time;
 					// System.out.println(fps);
 				} catch (InterruptedException e) {
@@ -80,8 +90,6 @@ public class GUI extends JFrame {
 			}
 		}
 	}
-
-
 
 	public class DrawPanel extends JPanel implements KeyListener {
 		private static final long serialVersionUID = 1L;
@@ -158,85 +166,19 @@ public class GUI extends JFrame {
 	}
 
 
-	GUI(MainControl mc, boolean _is_server) {
-		super("Tanks");
-		mctrl = mc;
-		mctrl.is_server = _is_server;
+	public GUI(StateMachine sm) {
+		SM = sm;
 		map = new Map();
 		player = new Player(null);
+		mainmenu = new MainMenu(this);
+		hostGame = new HostGame(this);
+		joinGame = new JoinGame(this);
+		lobby = new Lobby(this);
 
-		setSize(1024, 1024);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLayout(null);
-
-		//MENÜ
-		JMenuBar menuBar = new JMenuBar();
-
-		JMenu file = new JMenu("File");
-		JMenuItem start = new JMenuItem("Start");
-		start.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				//System.exit(0);
-				//start gomb funkciója...
-			}
-		});
-		file.add(start);
-		JMenuItem exit = new JMenuItem("Exit");
-		exit.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		file.add(exit);
-
-		JMenu network = new JMenu("Network");
-		JMenuItem server = new JMenuItem("Server");
-		server.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				mctrl.stateMachine.onEventHostGame(mctrl);
-			}
-		});
-		JMenuItem client = new JMenuItem("Client");
-		client.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {				
-				//startClient("192.168.0.104");
-				mctrl.stateMachine.onEventJoinGame(mctrl);
-			}
-		});
-		network.add(client);
-		network.add(server);
-
-		menuBar.add(file);
-		menuBar.add(network);
-		setJMenuBar(menuBar);
-
-		drawPanel = new DrawPanel();
-		drawPanel.setBounds(0, 0, 800, 800);
-		//drawPanel.setBorder(BorderFactory.createTitledBorder("Draw"));
-		addKeyListener(drawPanel);
-
-		add(drawPanel);
-
-		JPanel p = new JPanel();
-		JTextField Name = new JTextField(10);
-
-		p.add(new JLabel("Name:"));
-		p.add(Name);
-
-		int input = JOptionPane.showConfirmDialog(null, p, "Name : ", JOptionPane.OK_CANCEL_OPTION);
-		if(input == JOptionPane.OK_OPTION)
-		{
-			player.name = Name.getText();
+		mainmenu.frm.setVisible(true);
+		hostGame.frm.setVisible(false);
+		joinGame.frm.setVisible(false);
 		}
-		Thread t = new PeriodicDrawer();
-		t.start();
-
-		setVisible(true);
-	}
 
 	public Player getPlayer() {
 		return player;
@@ -251,16 +193,25 @@ public class GUI extends JFrame {
 	}*/
 
 	public void gameStateReceived(GameState gamestate){
-		if (gamestate.elements != null)
-			this.elements = gamestate.elements;
-		else 
-			this.elements = new CopyOnWriteArrayList<Element>();
-		this.map.lines = new ArrayList<Rectangle>(gamestate.map);
-		for (int i = 0; i < gamestate.players.size(); i++) {
-			Player p = gamestate.players.get(i);
-			if (p.name.equals(player.name)){
-				player.tank = p.tank;
+		if (gamestate.state == State.Game){
+			if (gamestate.elements != null)
+				this.elements = gamestate.elements;
+			else 
+				this.elements = new CopyOnWriteArrayList<Element>();
+			this.map.lines = new ArrayList<Rectangle>(gamestate.map);
+		}
+			players = gamestate.players;
+			DefaultListModel<String> model = new DefaultListModel<String>();
+		if(players != null && players.size() != 0){
+			for (int i = 0; i < gamestate.players.size(); i++) {
+				Player p = gamestate.players.get(i);
+				model.addElement(p.settings.name);
+				if (p.settings.ID == player.settings.ID){
+					player.settings.name = p.settings.name;
+					player.tank = p.tank;
+				}
 			}
+			lobby.list.setModel(model);
 		}
 	}
 
@@ -268,14 +219,20 @@ public class GUI extends JFrame {
 		if(client != null){
 			client.disconnect();
 		}
-		
+
 		client = new SerialClient(this);
 		Serverip = ip;
-		
+
 		Thread networkthread = new PeriodicPlayerUpdater();
 		networkthread.start();
+	}
 
-		
+	public void closeClient(){
+		client.disconnect();
+	}
+
+	public void startGame(){
+		client.startGame();
 	}
 
 	public void send(Player _player){
@@ -283,4 +240,43 @@ public class GUI extends JFrame {
 			client.send(_player);
 		}
 	}
+	public void setFrmWorkOfTanks(boolean b) {
+		this.frmWorkOfTanks.setVisible(b);
+	}
+	
+	public void setPlayerColor(Color color) {
+		player.settings.color = color;
+	}
+
+	@Override
+	public State onEventHostGame() {
+		this.SM.onEventHostGame();
+		return this.SM.currentState;
+	}
+
+	@Override
+	public State onEventJoinGame() {
+		this.SM.onEventJoinGame();
+		return this.SM.currentState;
+	}
+
+
+	@Override
+	public State onEventStartGame() {
+		this.SM.onEventStartGame();
+		return this.SM.currentState;
+	}
+
+	@Override
+	public State onEventCancel() {
+		this.SM.onEventCancel();
+		return this.SM.currentState;
+	}
+
+	@Override
+	public State onEventExit() {
+		this.SM.onEventExit();
+		return this.SM.currentState;
+	}
+
 }

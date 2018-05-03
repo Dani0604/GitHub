@@ -2,22 +2,21 @@ package TankGame;
 
 
 import java.awt.Rectangle;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+import Network.SerialServer;
 import TankGame.Element.Type;
-import TankGame.Player.Controls;
 
 /**
  *
  * @author Predi
  */
 
-class GameControl {
+public class GameControl {
 
 
-	public MainControl mctrl;
+	public StateMachine SM;
 	public CopyOnWriteArrayList<Player> players;
 	private static final double T = 5; 
 	private static final double GAME_END_WAIT_TIME = 3000;
@@ -25,8 +24,6 @@ class GameControl {
 	public Map map;
 	public SerialServer server;
 	public GameState gameState;
-	
-	
 	
 	private void newMatch(){
 		map = new Map();
@@ -46,6 +43,13 @@ class GameControl {
  		server.connect("localhost");
 	}
 	
+	public void closeServer(){
+		server.disconnect();
+	}
+	public boolean currentStateIsGame(){
+		return SM.currentState == State.Game;
+	}
+	
 	private class PeriodicControl extends Thread {
 		@Override
 		public void run() {
@@ -53,6 +57,7 @@ class GameControl {
 			double currentTime;
 			double waitTime = GAME_END_WAIT_TIME;
 			while (true) {
+				if (currentStateIsGame()){
 				currentTime = System.nanoTime();
 				double deltaT = (currentTime - prevTime)/1000000;
 				
@@ -114,9 +119,11 @@ class GameControl {
 				if (waitTime <= 0){
 					newMatch();
 				}
+				}
 				gameState = new GameState();
-				gameState.elements = new CopyOnWriteArrayList<Element>(elements);
-				gameState.map = new ArrayList<Rectangle>(map.lines);
+				gameState.state = SM.currentState;
+				gameState.elements = elements == null ? null : new CopyOnWriteArrayList<Element>(elements);
+				gameState.map = map == null || map.lines == null ? null : new ArrayList<Rectangle>(map.lines);
 				gameState.players = new CopyOnWriteArrayList<Player>(players);
 				
 				try {
@@ -137,24 +144,27 @@ class GameControl {
 	}*/
 	
 	
-	GameControl(MainControl mc) {
-		mctrl = mc;
-		startServer();
-		map = new Map();
-		elements = new CopyOnWriteArrayList<Element>();
-		//newElement(300, 300, 0);
+	GameControl(StateMachine sm) {
+		SM = sm;
 		players = new CopyOnWriteArrayList<Player>();
-		//Player p = new Player((Tank) elements.get(0));
-		//players.add(p);
-		Thread t = new PeriodicControl();
 		gameState = new GameState();
+		gameState.state = SM.currentState;
+		startServer();
+		Thread t = new PeriodicControl();
 		t.start();
 	}
 	
-	void playerReceived(Player _player) {
-		for (int i = 0; i < players.size(); i++) {
+	void startGame(){
+		map = new Map();
+		elements = new CopyOnWriteArrayList<Element>();
+	}
+	
+	
+	public void playerReceived(Player _player) {
+		int i;
+		for (i = 0; i < players.size(); i++) {
 			Player p = players.get(i);
-			if (p.name.equals(_player.name)){
+			if (p.settings.ID == _player.settings.ID){
 				//System.out.println(_player.controls.moveForward);
 				//System.out.println(i);
 				p.controls.moveForward = _player.controls.moveForward;
@@ -167,6 +177,8 @@ class GameControl {
 			}
 		}
 		//System.out.println('a');
+		if (_player.settings.name.equals("Default"))
+			_player.settings.name = "Player" + i;
 		players.add(_player);
 	}
 }

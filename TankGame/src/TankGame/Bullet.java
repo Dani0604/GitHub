@@ -1,23 +1,21 @@
 package TankGame;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Polygon;
 import java.awt.Rectangle;
 import java.awt.geom.Area;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Semaphore;
 
 public class Bullet extends Element implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2593081214538278025L;
 	private static final double VELOCITY = 210;
 	private static final double MAX_MOVE = 2000; 
 	private double actMove = MAX_MOVE;
@@ -25,12 +23,11 @@ public class Bullet extends Element implements Serializable {
 	
 	private Tank t;
 	protected static final int MAX_BULLETNUM = 5;
-	private int lastColl;
+
 
 	public Bullet(Tank t) {  
 		this.t = t;
 		velocity = VELOCITY;
-		lastColl = -1;
 	}
 
 	private void writeObject(java.io.ObjectOutputStream stream) throws IOException{

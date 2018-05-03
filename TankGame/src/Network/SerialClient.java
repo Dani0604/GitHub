@@ -1,13 +1,12 @@
-package TankGame;
+package Network;
 
-import java.awt.Rectangle;
-import java.awt.geom.Area;
 import java.io.*;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 import javax.swing.JOptionPane;
+
+import GUI_Pack.GUI;
+import TankGame.GameState;
+import TankGame.Player;
 
 
 public class SerialClient extends Network {
@@ -31,15 +30,12 @@ public class SerialClient extends Network {
 				System.out.println(ex.getMessage());
 				System.err.println("Server disconnected!");
 			}
-*/
+			 */
+			GameState received;
 			try {
 				System.out.println("Tankok fogadasa.");
 				while (true) {
-					/*	Player received = (Player) in.readObject();
-					System.out.println(received.tank.position);
-					gui.playerReceived(received);
-				}*/
-					GameState received = (GameState) in.readUnshared();
+					received = (GameState) in.readUnshared();
 					gui.gameStateReceived(received);
 				}
 			} catch (Exception ex) {
@@ -61,7 +57,7 @@ public class SerialClient extends Network {
 	}
 
 	@Override
-	void connect(String ip) {
+	public void connect(String ip) {
 		disconnect();
 		try {
 			socket = new Socket(ip, 10007);
@@ -69,9 +65,10 @@ public class SerialClient extends Network {
 			out = new ObjectOutputStream(socket.getOutputStream());
 			in = new ObjectInputStream(socket.getInputStream());
 			out.flush();
-
+			
 			Thread rec = new Thread(new ReceiverThread());
 			rec.start();
+			
 		} catch (UnknownHostException e) {
 			System.err.println("Don't know about host");
 		} catch (IOException e) {
@@ -83,9 +80,12 @@ public class SerialClient extends Network {
 	public SerialClient(GUI gui){
 		this.gui = gui;
 	}
-
 	
-	void send(Player _player) {
+	public void startGame(){
+		
+	}
+
+	public void send(Player _player) {
 		if (out == null)
 			return;
 		try {
@@ -94,12 +94,13 @@ public class SerialClient extends Network {
 			out.flush();
 		//	System.out.println("Sending player to server.");
 		} catch (IOException ex) {
-			System.err.println("Send error.");
+			System.err.println(ex.getMessage());
+			
 		}
 	}
 
 	@Override
-	void disconnect() {
+	public void disconnect() {
 		try {
 			if (out != null)
 				out.close();

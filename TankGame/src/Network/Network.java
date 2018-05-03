@@ -2,9 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package TankGame;
-
-import java.awt.Point;
+package Network;
 
 /**
  *
@@ -17,9 +15,9 @@ abstract class Network {
 	public Network(){
 	}
 	
-	abstract void connect(String ip);
+	abstract public void connect(String ip);
 
-	abstract void disconnect();
+	abstract public void disconnect();
 
 	
 }
