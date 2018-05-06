@@ -51,22 +51,24 @@ public class StateMachine implements StateEventListener {
 			gui.lobby.frm.setVisible(true);
 			gui.lobby.btnStart.setVisible(true);
 			gctrl = new GameControl(this);
-			//gctrl.startGame();
 			gctrl.startServer();
 			gui.startClient("localhost");
+			//itt kell jelezni a klienseknek, hogy szerver van ezen az IP-n (hogyan?)
 			break;
 		case LobbyHost:
 			if (gctrl.players.size() > 1){
+				System.out.println("szia");
 				currentState = State.Game;
 				gctrl.startGame();
 			}
 			break;
-		case JoinGame:
+		//ilyen lesz egyáltalán (JoinGame állapotban startevent)???
+		/*case JoinGame:
 			gui.startClient(gui.joinGame.textField_2.getText());
 			gui.lobby.frm.setVisible(true);
 			gui.joinGame.frm.setVisible(false);
 			gui.lobby.btnStart.setVisible(false);
-			break;
+			break;*/
 		default:
 			break;
 		}
@@ -109,5 +111,3 @@ public class StateMachine implements StateEventListener {
 		return currentState;
 	}
 }
-
-

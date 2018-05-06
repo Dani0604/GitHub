@@ -2,6 +2,8 @@ package Network;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
+
 import javax.swing.JOptionPane;
 
 import GUI_Pack.GUI;
@@ -111,5 +113,41 @@ public class SerialClient extends Network {
 		} catch (IOException ex) {
 			System.err.println("Error while closing conn.");
 		}
+	}
+
+	//Megkeresi a hálózaton található szervereket
+	public ArrayList<String> discoverServers() {
+		System.out.println("Discovering IPs...");
+
+		InetAddress localhost = null;
+		try {
+			localhost = InetAddress.getLocalHost();
+		} catch (UnknownHostException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+	    byte[] ip = localhost.getAddress();
+	    String output;
+	    ArrayList<String> ips = new ArrayList<String>();
+	    for (int i = 1; i <= 254; i++){
+	        try{
+	            ip[3] = (byte)i; 
+	            InetAddress address = InetAddress.getByAddress(ip);
+
+	            if (address.isReachable(100)){
+	                output = address.toString().substring(1);
+	                //System.out.println(output + " is on the network");
+	                ips.add(output);
+	            }
+	        }
+	        catch (Exception e){
+	        	e.printStackTrace();
+	        }
+	        finally{
+	        	//System.out.println(i);
+	        }
+	    }
+	    System.out.println("Discovering IPs finished.");
+	    return ips;
 	}
 }

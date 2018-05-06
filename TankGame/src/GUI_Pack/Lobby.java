@@ -52,18 +52,18 @@ public class Lobby {
 		frm.getContentPane().setLayout(null);
 		frm.setVisible(false);
 
-		JButton btnNewButton = new JButton("Main Menu");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton mainmenuBtn = new JButton("Main Menu");
+		mainmenuBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				gui.onEventCancel();
 			}
 		});
-		btnNewButton.setBounds(25, 340, 165, 50);
-		frm.getContentPane().add(btnNewButton);
+		mainmenuBtn.setBounds(25, 340, 165, 50);
+		frm.getContentPane().add(mainmenuBtn);
 
-		JButton btnNewButton_1 = new JButton("Ready");
-		btnNewButton_1.setBounds(215, 340, 165, 50);
-		frm.getContentPane().add(btnNewButton_1);
+		JButton readyBtn = new JButton("Ready");
+		readyBtn.setBounds(215, 340, 165, 50);
+		frm.getContentPane().add(readyBtn);
 
 		btnStart = new JButton("Start");
 		btnStart.addActionListener(new ActionListener() {

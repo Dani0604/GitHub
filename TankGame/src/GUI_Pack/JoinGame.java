@@ -3,13 +3,14 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.DocumentEvent;
@@ -23,6 +24,8 @@ public class JoinGame {
 	public JPanel panel;
 	private GUI gui;
 
+	ArrayList<String> ips;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -44,6 +47,7 @@ public class JoinGame {
 	 */
 	public JoinGame(GUI gui) {
 		this.gui = gui;
+		ips = new ArrayList<String>();
 		frm = new JFrame();
 		frm.setTitle("Join Game");
 		frm.setBounds(100, 100, 612, 460);
@@ -56,10 +60,6 @@ public class JoinGame {
 		panel.setLayout(null);
 		panel.setVisible(true);
 
-		JButton btnRefresh = new JButton("Refresh");
-		btnRefresh.setBounds(340, 320, 165, 50);
-		frm.add(btnRefresh);
-
 		JLabel lblName = new JLabel("Name");
 		lblName.setBounds(26, 26, 56, 16);
 		frm.add(lblName);
@@ -68,8 +68,6 @@ public class JoinGame {
 		lblIpAddress.setBounds(26, 285, 66, 16);
 		frm.add(lblIpAddress);
 
-		/////////////////!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//GameNames={"WoW", "AoH", "OP"};
 		JList<String> list = new JList<String>();
 		list.setModel(new AbstractListModel<String>() {
 			/**
@@ -77,6 +75,7 @@ public class JoinGame {
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
+			
 			String[] values = new String[] {"WoW", "AoH", "OP", "NomenEstOmen", "Gamers", "Popcorn", "VIK", "KiKKer's", "Last but not least"};
 			public int getSize() {
 				return values.length;
@@ -116,20 +115,26 @@ public class JoinGame {
 		frm.add(textField_2);
 		textField_2.setColumns(10);
 
-		JButton btnNewButton = new JButton("Search");
-		btnNewButton.setBounds(100, 320, 165, 50);
-		frm.add(btnNewButton);
+		JButton searchBtn = new JButton("Search");
+		searchBtn.setBounds(100, 320, 165, 50);
+		frm.add(searchBtn);
+		searchBtn.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e) {
+				discoverIPs();
+			}
+		});
 
-		JButton btnNewButton_1 = new JButton("Join Game");
-		btnNewButton_1.addActionListener(new ActionListener() {
+	
+		JButton joingameBtn = new JButton("Join Game");
+		joingameBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				gui.onEventStartGame();
 			}
 		});
-		btnNewButton_1.setBounds(394, 55, 97, 25);
-		frm.add(btnNewButton_1);
+		joingameBtn.setBounds(394, 55, 97, 25);
+		frm.add(joingameBtn);
 
-		JButton btnNewButton_2 = new JButton("Join Game");
+		/*JButton btnNewButton_2 = new JButton("Join Game");
 		btnNewButton_2.setBounds(394, 79, 97, 25);
 		frm.add(btnNewButton_2);
 
@@ -159,8 +164,21 @@ public class JoinGame {
 
 		JButton btnNewButton_9 = new JButton("Join Game");
 		btnNewButton_9.setBounds(394, 247, 97, 25);
-		frm.add(btnNewButton_9);
-
-
+		frm.add(btnNewButton_9);*/
+	}
+	
+	public void discoverIPs(){
+		if(gui!=null){
+			ips = gui.discoverGames(); //késõbb a visszatérési érték egy tömb lesz a szobanevekkel
+		}
+		else{
+			System.out.println("Gui is null.");
+		}
+		if(ips != null){
+			System.out.println("Elérhetõ " + ips.size() + " db IP cím.");
+			for(int i = 0; i < ips.size(); i++){
+				System.out.println(ips.get(i));
+			}
+		}
 	}
 }

@@ -12,7 +12,6 @@ import java.awt.event.KeyListener;
 import java.util.ArrayList;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import javax.swing.AbstractListModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -174,6 +173,7 @@ public class GUI implements StateEventListener {
 		hostGame = new HostGame(this);
 		joinGame = new JoinGame(this);
 		lobby = new Lobby(this);
+		client = new SerialClient(this);
 
 		mainmenu.frm.setVisible(true);
 		hostGame.frm.setVisible(false);
@@ -248,6 +248,19 @@ public class GUI implements StateEventListener {
 		player.settings.color = color;
 	}
 
+	//Join game ablakból lehetséges szerverek felderítése
+	public ArrayList<String> discoverGames() {
+		ArrayList<String> ips = new ArrayList<String>();
+		if(client!= null){
+			ips = client.discoverServers();
+		}
+		else{
+			System.out.println("Client:");
+			System.out.println(client);
+		}
+		return ips;
+	}
+	
 	@Override
 	public State onEventHostGame() {
 		this.SM.onEventHostGame();
@@ -278,5 +291,4 @@ public class GUI implements StateEventListener {
 		this.SM.onEventExit();
 		return this.SM.currentState;
 	}
-
 }

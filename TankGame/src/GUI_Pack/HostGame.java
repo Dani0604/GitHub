@@ -16,7 +16,7 @@ public class HostGame {
 
 	public JFrame frm;
 
-	private JPasswordField passwordField;
+	private JPasswordField passwordField; //úgy volt, hogy ilyen nem lesz
 	private JTextField textField;
 	private JTextField textField_1;
 	private String Name="";
@@ -123,11 +123,13 @@ public class HostGame {
 				}
 				IsPowerUp=checkBox.isSelected();
 				System.out.println(GameName);
-				System.out.println(Password);
+				//System.out.println(Password);
 				System.out.println(MaxPlayer);
 				System.out.println(IsPowerUp);
 				if(k==2) {
-					gui.onEventStartGame();
+					if(gui!=null){
+						gui.onEventStartGame();
+					}
 				}
 			}
 		});
